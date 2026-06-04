@@ -1,6 +1,8 @@
-const response = (res, status, message, data = null, error = null) => {
+const response = {};
+
+response.success = (res, status = 200, message, data = null) => {
   const apiResponse = {
-    status,
+    success: true,
     message,
   };
 
@@ -8,11 +10,17 @@ const response = (res, status, message, data = null, error = null) => {
     apiResponse.data = data;
   }
 
-  if (error) {
-    apiResponse.error = error;
-  }
-
   return res.status(status).json(apiResponse);
+};
+
+response.error = (res, error) => {
+  const apiResponse = {
+    success: false,
+    message: error.message || message,
+    error: error.error,
+  };
+
+  return res.status(error.statusCode).json(apiResponse);
 };
 
 module.exports = response;

@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const { requestLogger, errorHandler } = require("./middlewares");
-const { logger, response } = require("./core");
+const { response } = require("./core");
 const helmet = require("helmet");
 const compression = require("helmet");
 const corsOptions = require("./config/cors");
@@ -23,8 +23,10 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 app.use(requestLogger);
 
+app.use("/v1", require("./modules/users/users.route"));
+
 app.get("/health", (req, res) => {
-  return response(res, 200, "Server is Healthy");
+  return response.success(res, 200, "Server is Healthy");
 });
 
 app.use(errorHandler);

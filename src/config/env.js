@@ -50,9 +50,6 @@ const envSchema = z.object({
   JWT_ACCESS_EXPIRES_IN: z.string().default("15m"),
 
   JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
-
-  REDIS_HOST: z.string().min(1, "REDIS_HOST is required"),
-  REDIS_PORT: z.coerce.number().default(6379),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
@@ -70,10 +67,6 @@ if (!parsedEnv.success) {
 const env = parsedEnv.data;
 
 module.exports = {
-  redis: {
-    host: env.REDIS_HOST,
-    REDIS_PORT: env.REDIS_PORT,
-  },
   nodeEnv: env.NODE_ENV,
   isProduction: env.NODE_ENV === "production",
   isDevelopment: env.NODE_ENV === "development",
