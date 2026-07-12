@@ -5,7 +5,8 @@ module.exports.createUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
     const result = await services.createUser(name, email, password);
-    return response.success(res, 200, "user successfully created !", result);
+    console.log(result);
+    return response.success(res, 201, "user successfully created !", result);
   } catch (e) {
     logger.error(e);
     return response.error(res, e);

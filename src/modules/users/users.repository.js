@@ -19,4 +19,8 @@ const checkEmailAlredyExists = async (email) => {
   return result.rows[0];
 };
 
-module.exports = { createUser, getAllUsers, checkEmailAlredyExists };
+module.exports = {
+  createUser,
+  getAllUsers,
+  checkEmailAlredyExists,
+};

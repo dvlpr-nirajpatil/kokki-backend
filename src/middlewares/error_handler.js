@@ -11,13 +11,13 @@ const errorHandler = (err, req, res, next) => {
 
   const statusCode = err.statusCode || 500;
 
-  return response(
-    res,
-    statusCode,
-    process.env.NODE_ENV === "production"
-      ? "Something went wrong"
-      : err.message,
-  );
+  return res.status(statusCode).json({
+    status: false,
+    message:
+      process.env.NODE_ENV === "production"
+        ? "Something went wrong"
+        : err.message,
+  });
 };
 
 module.exports = errorHandler;

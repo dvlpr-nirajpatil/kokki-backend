@@ -20,7 +20,7 @@ response.error = (res, error) => {
     error: error.error,
   };
 
-  return res.status(error.statusCode).json(apiResponse);
+  return res.status(error.statusCode || 500).json(apiResponse);
 };
 
 module.exports = response;
