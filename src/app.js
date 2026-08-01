@@ -23,8 +23,9 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 app.use(requestLogger);
 
-// app.use("/v1", require("./modules/users/users.route"));
+
 app.use("/v1", require("./modules/authentication/auth.route"));
+app.use("/v2", require("./modules/auth/auth.router"));
 
 app.get("/health", (req, res) => {
   return response.success(res, 200, "Server is Healthy");
