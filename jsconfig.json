@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+        "paths": {
+            "@config/*": [
+                "./src/config/*"
+            ],
+            "@core/*": [
+                "./src/core/*"
+            ],
+            "@utils/*": [
+                "./src/utils/*"
+            ],
+            "@middlewares/*": [
+                "./src/middlewares/*"
+            ],
+            "@integrations/*": [
+                "./src/integrations/*"
+            ],
+            "@shared/*": [
+                "./src/shared/*"
+            ],
+            "@email-templates/*": [
+                "./src/integrations/email/templates/*"
+            ],
+        }
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}

@@ -4,7 +4,7 @@
   "description": "this is the scaleton to start building backend using express and postgre",
   "main": "/src/server.js",
   "scripts": {
-    "test": "jest",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "migrate": "knex migrate:latest",
@@ -17,17 +17,30 @@
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "engines": {
+    "node": ">=20.9.0"
+  },
   "dependencies": {
+    "@aws-sdk/client-cloudfront": "^3.1109.0",
+    "@aws-sdk/client-s3": "^3.1110.0",
+    "@aws-sdk/client-ses": "^3.1111.0",
+    "@aws-sdk/s3-request-presigner": "^3.1110.0",
+    "axios": "^1.19.0",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
     "compression": "^1.8.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "file-type": "^21.3.4",
+    "heic-decode": "^2.1.0",
     "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.3",
+    "module-alias": "^2.3.4",
     "morgan": "^1.11.0",
+    "multer": "^2.2.0",
     "pg": "^8.21.0",
+    "sharp": "^0.35.3",
     "winston": "^3.19.0",
     "zod": "^4.4.3"
   },
@@ -42,5 +55,25 @@
     "nodemon": "^3.1.14",
     "prettier": "^3.8.3",
     "supertest": "^7.2.2"
+  },
+  "_moduleAliases": {
+    "@config": "src/config",
+    "@core": "src/core",
+    "@utils": "src/utils",
+    "@middlewares": "src/middlewares",
+    "@integrations": "src/integrations",
+    "@shared": "src/shared"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@config/(.*)$": "<rootDir>/src/config/$1",
+      "^@core/(.*)$": "<rootDir>/src/core/$1",
+      "^@utils/(.*)$": "<rootDir>/src/utils/$1",
+      "^@middlewares/(.*)$": "<rootDir>/src/middlewares/$1",
+      "^@integrations/(.*)$": "<rootDir>/src/integrations/$1",
+      "^@shared/(.*)$": "<rootDir>/src/shared/$1",
+      "@email-templates/*": "<rootDir>/src/integrations/email/templates/$1"
+    }
   }
 }

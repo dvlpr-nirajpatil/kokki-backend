@@ -50,6 +50,36 @@ const envSchema = z.object({
   JWT_ACCESS_EXPIRES_IN: z.string().default("15m"),
 
   JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
+  API_SETU_CLIENT_ID: z.string().min(1, "API_SETU_CLIENT_ID is REQUIRED"),
+  VERIFY_GST_API_KEY: z.string().min(1, "VERIFY_GST_API_KEY is REQUIRED"),
+  AWS_ACCESS_KEY: z.string().min(1).optional(),
+  AWS_ACCESS_KEY_SECRET: z.string().min(1).optional(),
+  AWS_REGION: z.string().min(1, "AWS_REGION is required"),
+  AWS_BUCKET_NAME: z.string().min(1, "AWS_BUCKET_NAME is required"),
+  AWS_CLOUDFRONT_DISTRIBUTION_ID: z.string().min(1).optional(),
+  CDN_BASE_URL: z.string().url().default("https://cdn.kokki.in"),
+  UPLOAD_MAX_FILE_SIZE_MB: z.coerce.number().int().min(1).max(50).default(15),
+  UPLOAD_MAX_FILES: z.coerce.number().int().min(1).max(10).default(10),
+  IMAGE_MAX_PIXELS: z.coerce
+    .number()
+    .int()
+    .min(1_000_000)
+    .max(100_000_000)
+    .default(50_000_000),
+  IMAGE_MAX_WIDTH: z.coerce.number().int().min(320).max(8192).default(1920),
+  IMAGE_WEBP_QUALITY: z.coerce.number().int().min(1).max(100).default(80),
+  HEIC_MAX_CONCURRENCY: z.coerce.number().int().min(1).max(4).default(1),
+}).superRefine((values, context) => {
+  const hasAccessKey = Boolean(values.AWS_ACCESS_KEY);
+  const hasSecretKey = Boolean(values.AWS_ACCESS_KEY_SECRET);
+
+  if (hasAccessKey !== hasSecretKey) {
+    context.addIssue({
+      code: "custom",
+      path: ["AWS_ACCESS_KEY"],
+      message: "AWS_ACCESS_KEY and AWS_ACCESS_KEY_SECRET must be provided together",
+    });
+  }
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
@@ -98,4 +128,28 @@ module.exports = {
     accessExpiresIn: env.JWT_ACCESS_EXPIRES_IN,
     refreshExpiresIn: env.JWT_REFRESH_EXPIRES_IN,
   },
+
+  apiSetu: {
+    clientId: env.API_SETU_CLIENT_ID,
+    gst_api_key: env.VERIFY_GST_API_KEY
+  },
+
+  aws: {
+    accessKeyId: env.AWS_ACCESS_KEY,
+    secretAccessKey: env.AWS_ACCESS_KEY_SECRET,
+    bucketName: env.AWS_BUCKET_NAME,
+    region: env.AWS_REGION,
+    cloudFrontDistributionId: env.AWS_CLOUDFRONT_DISTRIBUTION_ID,
+    cdnBaseUrl: env.CDN_BASE_URL.replace(/\/+$/, ""),
+  },
+
+  upload: {
+    maxFileSizeBytes: env.UPLOAD_MAX_FILE_SIZE_MB * 1024 * 1024,
+    maxFiles: env.UPLOAD_MAX_FILES,
+    imageMaxPixels: env.IMAGE_MAX_PIXELS,
+    imageMaxWidth: env.IMAGE_MAX_WIDTH,
+    imageWebpQuality: env.IMAGE_WEBP_QUALITY,
+    heicMaxConcurrency: env.HEIC_MAX_CONCURRENCY,
+  },
+
 };

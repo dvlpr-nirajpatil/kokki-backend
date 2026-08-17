@@ -1,9 +1,10 @@
 const express = require("express");
+require("module-alias/register");
 const cors = require("cors");
 const { requestLogger, errorHandler } = require("./middlewares");
 const { response } = require("./core");
 const helmet = require("helmet");
-const compression = require("helmet");
+const compression = require("compression");
 const corsOptions = require("./config/cors");
 
 const app = express();
@@ -24,8 +25,7 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(requestLogger);
 
 
-app.use("/v1", require("./modules/authentication/auth.route"));
-app.use("/v2", require("./modules/auth/auth.router"));
+app.use("/api/v1", require("./router/v1.router"));
 
 app.get("/health", (req, res) => {
   return response.success(res, 200, "Server is Healthy");
