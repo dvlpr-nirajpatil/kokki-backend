@@ -52,6 +52,11 @@ adding or changing variables because existing deployments are not updated. Keep
 Vercel's “Automatically expose System Environment Variables” setting enabled so
 the application receives `VERCEL_ENV` and `VERCEL_TARGET_ENV`.
 
+Vercel deployments write structured logs to stdout/stderr and do not create
+local log files. View UAT output in the project's Logs tab with the environment
+or deployment filter set to Preview. UAT request logs, including `/health`, are
+emitted at the `info` level; production health requests remain suppressed.
+
 ## Database configuration
 
 Development can use the individual `DB_HOST`, `DB_PORT`, `DB_USER`,
