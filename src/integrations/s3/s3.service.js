@@ -1,94 +1,64 @@
-
 const {
-    PutObjectCommand,
-    DeleteObjectCommand,
-    HeadObjectCommand,
+  PutObjectCommand,
+  DeleteObjectCommand,
+  HeadObjectCommand,
 } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 const s3Client = require("./s3.client");
 const env = require("@config/env");
 
-async function uploadFile({
-    body,
-    key,
-    contentType,
-    contentLength,
-}) {
-
-    const command = new PutObjectCommand({
-        Bucket: env.aws.bucketName,
-        Key: key,
-        Body: body,
-        ContentType: contentType,
-        ContentLength: contentLength,
-        CacheControl: "public, max-age=31536000, immutable",
-    });
-
-    await s3Client.send(command);
-
-    return {
-        key,
-        url: `${env.aws.cdnBaseUrl}/${key}`,
-    };
-}
-
 async function deleteFile(key) {
-    const command = new DeleteObjectCommand({
-        Bucket: env.aws.bucketName,
-        Key: key,
-    });
+  const command = new DeleteObjectCommand({
+    Bucket: env.aws.bucketName,
+    Key: key,
+  });
 
-    await s3Client.send(command);
+  await s3Client.send(command);
 }
 
-async function createPresignedUploadUrl({
-    key,
-    contentType,
-    expiresIn = 300,
-}) {
-    const command = new PutObjectCommand({
-        Bucket: env.aws.bucketName,
-        Key: key,
-        ContentType: contentType,
-    });
+async function createPresignedUploadUrl({ key, contentType, expiresIn = 300 }) {
+  const command = new PutObjectCommand({
+    Bucket: env.aws.bucketName,
+    Key: key,
+    ContentType: contentType,
+  });
 
-    return getSignedUrl(s3Client, command, {
-        expiresIn,
-        signableHeaders: new Set(["content-type"]),
-    });
+  return getSignedUrl(s3Client, command, {
+    expiresIn,
+    signableHeaders: new Set(["content-type"]),
+  });
 }
 
 async function getFileMetadata(key) {
-    const command = new HeadObjectCommand({
-        Bucket: env.aws.bucketName,
-        Key: key,
-    });
+  const command = new HeadObjectCommand({
+    Bucket: env.aws.bucketName,
+    Key: key,
+  });
 
-    try {
-        const object = await s3Client.send(command);
+  try {
+    const object = await s3Client.send(command);
 
-        return {
-            key,
-            contentType: object.ContentType,
-            contentLength: object.ContentLength,
-            etag: object.ETag,
-        };
-    } catch (error) {
-        const isNotFound =
-            error.name === "NotFound" ||
-            error.name === "NoSuchKey" ||
-            error.$metadata?.httpStatusCode === 404;
+    return {
+      key,
+      contentType: object.ContentType,
+      contentLength: object.ContentLength,
+      etag: object.ETag,
+    };
+  } catch (error) {
+    const isNotFound =
+      error.name === "NotFound" ||
+      error.name === "NoSuchKey" ||
+      error.$metadata?.httpStatusCode === 404;
 
-        if (isNotFound) return null;
+    if (isNotFound) return null;
 
-        throw error;
-    }
+    throw error;
+  }
 }
 
 module.exports = {
-    uploadFile,
-    deleteFile,
-    createPresignedUploadUrl,
-    getFileMetadata,
+  deleteFile,
+  createPresignedUploadUrl,
+  getFileMetadata,
 };

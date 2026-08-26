@@ -1,26 +1,33 @@
-require("dotenv").config();
+const {
+  VALID_ENVIRONMENTS,
+  getCliEnvironment,
+  loadEnvironment,
+} = require("./src/config/load-env");
 
-// Update with your config settings.
+const {
+  createPgConnectionConfig,
+  parseDatabaseConfig,
+} = require("./src/config/database");
 
-/**
- * @type { Object.<string, import("knex").Knex.Config> }
- */
+loadEnvironment(getCliEnvironment() || "development");
+const databaseConfig = parseDatabaseConfig(process.env);
 
-module.exports = {
-  development: {
-    client: "pg",
-    connection: {
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT),
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-    },
-    migrations: {
-      directory: "./src/db/migrations",
-    },
-    seeds: {
-      directory: "./src/db/seeds",
-    },
+/** @type {import("knex").Knex.Config} */
+const knexConfig = {
+  client: "pg",
+  connection: createPgConnectionConfig(databaseConfig),
+  pool: {
+    min: 0,
+    max: databaseConfig.poolMax,
+  },
+  migrations: {
+    directory: "./src/db/migrations",
+  },
+  seeds: {
+    directory: "./src/db/seeds",
   },
 };
+
+module.exports = Object.fromEntries(
+  VALID_ENVIRONMENTS.map((name) => [name, knexConfig]),
+);
