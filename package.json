@@ -70,6 +70,9 @@
   },
   "jest": {
     "testEnvironment": "node",
+    "setupFiles": [
+      "<rootDir>/tests/setup-env.js"
+    ],
     "moduleNameMapper": {
       "^@config/(.*)$": "<rootDir>/src/config/$1",
       "^@core/(.*)$": "<rootDir>/src/core/$1",

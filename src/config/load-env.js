@@ -61,47 +61,50 @@ function getVercelEnvironment(rawEnvironment = process.env) {
 function loadEnvironment(requestedEnvironment) {
   const cliEnvironment = getCliEnvironment();
   const vercelEnvironment = getVercelEnvironment();
-  const environment =
-    requestedEnvironment ||
-    cliEnvironment ||
-    vercelEnvironment ||
-    "development";
-  const isTest =
-    requestedEnvironment === undefined &&
-    cliEnvironment === undefined &&
-    vercelEnvironment === undefined &&
-    process.env.NODE_ENV === "test";
+  const fileEnvironment = requestedEnvironment || cliEnvironment;
 
-  if (!VALID_ENVIRONMENTS.includes(environment)) {
+  if (!fileEnvironment) {
+    const environment =
+      vercelEnvironment || process.env.NODE_ENV || "development";
+
+    if (environment !== "test" && !VALID_ENVIRONMENTS.includes(environment)) {
+      throw new Error(
+        `Environment must be one of: ${VALID_ENVIRONMENTS.join(", ")}`,
+      );
+    }
+
+    process.env.NODE_ENV = environment;
+    return environment;
+  }
+
+  if (!VALID_ENVIRONMENTS.includes(fileEnvironment)) {
     throw new Error(
       `Environment must be one of: ${VALID_ENVIRONMENTS.join(", ")}`,
     );
   }
 
-  if (!vercelEnvironment) {
-    const projectRoot = path.resolve(__dirname, "../..");
-    const environmentFile = path.join(
-      projectRoot,
-      ENVIRONMENT_FILES[environment],
-    );
-    const result = dotenv.config({
-      path: environmentFile,
-      override: true,
-      quiet: true,
-    });
+  const projectRoot = path.resolve(__dirname, "../..");
+  const environmentFile = path.join(
+    projectRoot,
+    ENVIRONMENT_FILES[fileEnvironment],
+  );
+  const result = dotenv.config({
+    path: environmentFile,
+    override: true,
+    quiet: true,
+  });
 
-    if (result.error) {
-      throw new Error(
-        `Could not load ${path.basename(environmentFile)}. Create it from the matching example file.`,
-        { cause: result.error },
-      );
-    }
+  if (result.error) {
+    throw new Error(
+      `Could not load ${path.basename(environmentFile)}. Create it from the matching example file.`,
+      { cause: result.error },
+    );
   }
 
   // The command controls the runtime mode; values inside the file cannot.
-  process.env.NODE_ENV = isTest ? "test" : environment;
+  process.env.NODE_ENV = fileEnvironment;
 
-  return environment;
+  return fileEnvironment;
 }
 
 module.exports = {

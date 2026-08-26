@@ -11,6 +11,8 @@ The API has three configuration files. Each command loads one file directly:
 The files do not contain `NODE_ENV` or another environment selector. The npm
 command selects the environment with the `--env` argument, and the application
 loads only that environment's file. There are no `.env` or `.local` fallbacks.
+When no `--env` argument is present, the application does not load any file and
+uses the values already available in `process.env`.
 
 ## Create the files
 

@@ -1,9 +1,5 @@
 const dotenv = require("dotenv");
 
-jest.mock("dotenv", () => ({
-  config: jest.fn(),
-}));
-
 const {
   getVercelEnvironment,
   loadEnvironment,
@@ -11,10 +7,15 @@ const {
 
 describe("environment loading", () => {
   const originalEnvironment = { ...process.env };
+  let dotenvConfigSpy;
+
+  beforeEach(() => {
+    dotenvConfigSpy = jest.spyOn(dotenv, "config");
+  });
 
   afterEach(() => {
     process.env = { ...originalEnvironment };
-    jest.clearAllMocks();
+    dotenvConfigSpy.mockRestore();
   });
 
   test.each([
@@ -47,6 +48,18 @@ describe("environment loading", () => {
 
     expect(loadEnvironment()).toBe("uat");
     expect(process.env.NODE_ENV).toBe("uat");
-    expect(dotenv.config).not.toHaveBeenCalled();
+    expect(dotenvConfigSpy).not.toHaveBeenCalled();
+  });
+
+  test("uses process.env without loading a file when no argument is provided", () => {
+    delete process.env.VERCEL;
+    delete process.env.VERCEL_ENV;
+    delete process.env.VERCEL_TARGET_ENV;
+    process.env.NODE_ENV = "production";
+    process.env.PORT = "7000";
+
+    expect(loadEnvironment()).toBe("production");
+    expect(process.env.PORT).toBe("7000");
+    expect(dotenvConfigSpy).not.toHaveBeenCalled();
   });
 });
