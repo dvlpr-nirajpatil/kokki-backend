@@ -1,4 +1,4 @@
-const { query } = require("@config/db");
+const { query } = require("../../config/db");
 
 async function getRoleByCode(client, code) {
   const SQL = "SELECT * FROM roles WHERE code = $1";
@@ -34,7 +34,8 @@ async function assignUserRole(client, user_id, role_id) {
 }
 
 async function createNewUserByPhoneNumber(client, user_id, phoneNo, email) {
-  const SQL = "INSERT INTO users (user_id,phone,email) VALUES ($1,$2,$3) RETURNING *";
+  const SQL =
+    "INSERT INTO users (user_id,phone,email) VALUES ($1,$2,$3) RETURNING *";
   const user = await client.query(SQL, [user_id, phoneNo, email]);
   return user.rows[0];
 }
@@ -46,7 +47,7 @@ async function createEstimateRequest(
   vehicle_no,
   service_pin,
   vehicle_drivable,
-  email
+  email,
 ) {
   const SQL =
     "INSERT INTO estimate_requests (request_id,user_id,vehicle_no,service_pincode,vehicle_drivable,current_step,email) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *";
@@ -57,7 +58,7 @@ async function createEstimateRequest(
     service_pin,
     vehicle_drivable,
     2,
-    email
+    email,
   ]);
   return request.rows[0];
 }
@@ -186,7 +187,6 @@ async function getUserById(userId) {
   const SQL = "SELECT * FROM users where id = $1";
   const result = await query(SQL, [userId]);
   return result.rows[0];
-
 }
 
 module.exports = {
@@ -202,6 +202,5 @@ module.exports = {
   getEstimateRequestCompletionReadiness,
   submitEstimateRequest,
   saveRequestDocuments,
-  getUserById
-
+  getUserById,
 };

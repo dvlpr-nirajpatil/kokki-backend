@@ -1,4 +1,4 @@
-const { response } = require("@core/index");
+const { response } = require("../../core/index");
 const service = require("./upload.service");
 
 module.exports.deleteAsset = async (req, res) => {

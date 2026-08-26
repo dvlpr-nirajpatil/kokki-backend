@@ -1,16 +1,14 @@
 const crypto = require("crypto");
-const { logger } = require("@core/index");
+const { logger } = require("../../core/index");
 const repository = require("./estimateRequests.repository");
-const { pool } = require("@config/db");
-const env = require("@config/env");
-const AppError = require("@utils/app_error");
-const s3Service = require("@integrations/s3/s3.service");
+const { pool } = require("../../config/db");
+const env = require("../../config/env");
+const AppError = require("../../utils/app_error");
+const s3Service = require("../../integrations/s3/s3.service");
 const jwt = require("jsonwebtoken");
-const emailTemplates = require("@integrations/email/templates/estimate-request-received.template");
+const emailTemplates = require("../../integrations/email/templates/estimate-request-received.template");
 
-const {
-  sendEmail,
-} = require("@integrations/email/email.service");
+const { sendEmail } = require("../../integrations/email/email.service");
 
 const CUSTOMER_ROLE_CODE = "CUSTOMER";
 const ESTIMATE_REQUEST_ID_PREFIX = "KER";
@@ -79,7 +77,7 @@ async function createEstimateRequestStep1(
       registration_no,
       servicePin,
       canVehicleDriven,
-      email
+      email,
     );
 
     await client.query("COMMIT");
@@ -381,7 +379,6 @@ async function completeEstimateRequest(requestId, userId) {
 
   const user = await repository.getUserById(userId);
 
-
   const template = emailTemplates.estimateRequestReceivedTemplate({
     customerName: user.name,
     requestNo: request.request_id,
@@ -395,14 +392,8 @@ async function completeEstimateRequest(requestId, userId) {
     console.error("Estimate confirmation email failed:", error);
   });
 
-
   return submittedRequest;
 }
-
-
-
-
-
 
 module.exports = {
   createEstimateRequestStep1,

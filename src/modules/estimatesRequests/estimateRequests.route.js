@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const controller = require("./estimateRequests.controller");
-const { protectRoute } = require("@middlewares/index");
-const validate = require("@middlewares/validate");
+const { protectRoute } = require("../../middlewares/index");
+const validate = require("../../middlewares/validate");
 
 const {
   createEstimateRequestStep1Schema,

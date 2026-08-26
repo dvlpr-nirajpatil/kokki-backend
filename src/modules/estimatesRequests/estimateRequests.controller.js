@@ -1,5 +1,5 @@
 const service = require("./estimateRequests.service");
-const { response } = require("@core/index");
+const { response } = require("../../core/index");
 
 //----------------------------------------------------------------------------------------------------------------------------------------
 // CREATE ESTIMATE REQUEST STEP - 1

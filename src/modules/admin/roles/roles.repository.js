@@ -1,28 +1,26 @@
-const { query, pool } = require("@config/db");
+const { query, pool } = require("../../../config/db");
 
 //----------------------------------------------------------------------------------------------------------------------------------------
 // ADD NEW ROLE
 //----------------------------------------------------------------------------------------------------------------------------------------
 
 async function addNewRole() {
-    const SQL = "INSERT INTO roles () VALUES () RETURNING *";
+  const SQL = "INSERT INTO roles () VALUES () RETURNING *";
 
-    const roles = await query(SQL, []);
+  const roles = await query(SQL, []);
 
-    return roles.rows[0];
+  return roles.rows[0];
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------------
 // FETCH ROLES
 //----------------------------------------------------------------------------------------------------------------------------------------
 
 async function fetchAllRoles() {
-    const SQL = "SELECT * FROM roles";
-    const roles = await query(SQL);
-    return roles.rows;
+  const SQL = "SELECT * FROM roles";
+  const roles = await query(SQL);
+  return roles.rows;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------------
 //

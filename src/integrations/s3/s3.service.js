@@ -6,7 +6,7 @@ const {
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 
 const s3Client = require("./s3.client");
-const env = require("@config/env");
+const env = require("../../config/env");
 
 async function deleteFile(key) {
   const command = new DeleteObjectCommand({

@@ -1,8 +1,8 @@
-const AppError = require("@utils/app_error");
-const { logger } = require("@core/index");
-const env = require("@config/env");
-const s3Service = require("@integrations/s3/s3.service");
-const cloudFrontService = require("@integrations/s3/cloudfront.service");
+const AppError = require("../../utils/app_error");
+const { logger } = require("../../core/index");
+const env = require("../../config/env");
+const s3Service = require("../../integrations/s3/s3.service");
+const cloudFrontService = require("../../integrations/s3/cloudfront.service");
 
 const UPLOAD_KEY_PATTERN =
   /^uploads\/(images\/[0-9]{4}\/(?:0[1-9]|1[0-2])\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.webp|documents\/[0-9]{4}\/(?:0[1-9]|1[0-2])\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.pdf)$/i;

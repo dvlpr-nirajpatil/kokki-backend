@@ -1,5 +1,4 @@
 const express = require("express");
-require("module-alias/register");
 const cors = require("cors");
 const { requestLogger, errorHandler } = require("./middlewares");
 const { response } = require("./core");
@@ -23,7 +22,6 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 app.use(requestLogger);
-
 
 app.use("/api/v1", require("./router/v1.router"));
 

@@ -1,18 +1,14 @@
-const { query } = require("@config/db");
+const { query } = require("../../../config/db");
 
 async function getNextApplicationNumber(client) {
-
-    const result = await client.query(
-        "SELECT nextval('vendor_onboarding_request_seq') AS seq",
-    );
-    return result.rows[0].seq;
-
+  const result = await client.query(
+    "SELECT nextval('vendor_onboarding_request_seq') AS seq",
+  );
+  return result.rows[0].seq;
 }
 
-
 async function createVendorApplication(client, data) {
-
-    const SQL = `
+  const SQL = `
         INSERT INTO vendor_applications (
             application_no,
             vendor_type,
@@ -25,23 +21,20 @@ async function createVendorApplication(client, data) {
         RETURNING *
     `;
 
-    const result = await client.query(SQL, [
-        data.application_no,
-        data.vendor_type,
-        data.name,
-        data.phone,
-        data.whatsapp,
-        data.email
-    ]);
+  const result = await client.query(SQL, [
+    data.application_no,
+    data.vendor_type,
+    data.name,
+    data.phone,
+    data.whatsapp,
+    data.email,
+  ]);
 
-    return result.rows[0];
+  return result.rows[0];
 }
 
-
-
 async function saveBusinessDetails(client, data) {
-
-    const SQL = `
+  const SQL = `
         UPDATE vendor_applications
         SET
             gstin = $1,
@@ -59,63 +52,60 @@ async function saveBusinessDetails(client, data) {
         RETURNING *
     `;
 
-    const result = await client.query(SQL, [
-        data.gstin,
-        data.legal_name,
-        data.trade_name,
-        data.business_type,
-        data.gst_status,
-        data.address,
-        data.state,
-        data.city,
-        data.pincode,
-        data.latitude,
-        data.longitude,
-        data.id
-    ]);
+  const result = await client.query(SQL, [
+    data.gstin,
+    data.legal_name,
+    data.trade_name,
+    data.business_type,
+    data.gst_status,
+    data.address,
+    data.state,
+    data.city,
+    data.pincode,
+    data.latitude,
+    data.longitude,
+    data.id,
+  ]);
 
-    return result.rows[0];
+  return result.rows[0];
 }
-
-
 
 async function getSparePartTypes() {
-    const SQL = "SELECT id, name From spare_parts_types";
-    const result = await query(SQL);
-    return result.rows;
+  const SQL = "SELECT id, name From spare_parts_types";
+  const result = await query(SQL);
+  return result.rows;
 }
 
-
 async function getVehicleCategories() {
-    const SQL = "SELECT id, name From vehicle_categories";
-    const result = await query(SQL);
-    return result.rows;
+  const SQL = "SELECT id, name From vehicle_categories";
+  const result = await query(SQL);
+  return result.rows;
 }
 
 async function getVehicleBrands() {
-    const SQL = "SELECT id, name From vehicle_makes";
-    const result = await query(SQL);
-    return result.rows;
+  const SQL = "SELECT id, name From vehicle_makes";
+  const result = await query(SQL);
+  return result.rows;
 }
 
 async function getSparePartsCategories() {
-    const SQL = "SELECT id, name From spare_parts_categories";
-    const result = await query(SQL);
-    return result.rows;
+  const SQL = "SELECT id, name From spare_parts_categories";
+  const result = await query(SQL);
+  return result.rows;
 }
 
 async function saveVendorApplicationSparePartsTypes(
-    client,
-    applicationId,
-    types
+  client,
+  applicationId,
+  types,
 ) {
-    await client.query(
-        `DELETE FROM vendor_application_spare_part_types
+  await client.query(
+    `DELETE FROM vendor_application_spare_part_types
          WHERE application_id = $1`,
-        [applicationId]
-    );
+    [applicationId],
+  );
 
-    const SQL = `
+  const SQL = `
         INSERT INTO vendor_application_spare_part_types (
             application_id,
             type_id
@@ -124,26 +114,23 @@ async function saveVendorApplicationSparePartsTypes(
         RETURNING *
     `;
 
-    const result = await client.query(SQL, [
-        applicationId,
-        types
-    ]);
+  const result = await client.query(SQL, [applicationId, types]);
 
-    return result.rows;
+  return result.rows;
 }
 
 async function saveVendorApplicationVehicleCategories(
-    client,
-    applicationId,
-    vehicleCategories
+  client,
+  applicationId,
+  vehicleCategories,
 ) {
-    await client.query(
-        `DELETE FROM vendor_application_vehicle_categories
+  await client.query(
+    `DELETE FROM vendor_application_vehicle_categories
          WHERE application_id = $1`,
-        [applicationId]
-    );
+    [applicationId],
+  );
 
-    const SQL = `
+  const SQL = `
         INSERT INTO vendor_application_vehicle_categories (
             application_id,
             vehicle_category_id
@@ -152,27 +139,19 @@ async function saveVendorApplicationVehicleCategories(
         RETURNING *
     `;
 
-    const result = await client.query(SQL, [
-        applicationId,
-        vehicleCategories
-    ]);
+  const result = await client.query(SQL, [applicationId, vehicleCategories]);
 
-    return result.rows;
+  return result.rows;
 }
 
-
-async function saveVendorApplicationBrands(
-    client,
-    applicationId,
-    brands
-) {
-    await client.query(
-        `DELETE FROM vendor_application_vehicle_brands
+async function saveVendorApplicationBrands(client, applicationId, brands) {
+  await client.query(
+    `DELETE FROM vendor_application_vehicle_brands
          WHERE application_id = $1`,
-        [applicationId]
-    );
+    [applicationId],
+  );
 
-    const SQL = `
+  const SQL = `
         INSERT INTO vendor_application_vehicle_brands (
             application_id,
             brand_id
@@ -181,27 +160,23 @@ async function saveVendorApplicationBrands(
         RETURNING *
     `;
 
-    const result = await client.query(SQL, [
-        applicationId,
-        brands
-    ]);
+  const result = await client.query(SQL, [applicationId, brands]);
 
-    return result.rows;
+  return result.rows;
 }
 
-
 async function saveVendorApplicationPartsCategories(
-    client,
-    applicationId,
-    categories
+  client,
+  applicationId,
+  categories,
 ) {
-    await client.query(
-        `DELETE FROM vendor_application_spare_parts_categories
+  await client.query(
+    `DELETE FROM vendor_application_spare_parts_categories
          WHERE application_id = $1`,
-        [applicationId]
-    );
+    [applicationId],
+  );
 
-    const SQL = `
+  const SQL = `
         INSERT INTO vendor_application_spare_parts_categories (
             application_id,
             category_id
@@ -210,24 +185,25 @@ async function saveVendorApplicationPartsCategories(
         RETURNING *
     `;
 
-    const result = await client.query(SQL, [
-        applicationId,
-        categories
-    ]);
+  const result = await client.query(SQL, [applicationId, categories]);
 
-    return result.rows;
+  return result.rows;
 }
 
-
 async function saveBusinessHours(data) {
-    const SQL = "UPDATE vendor_applications SET business_days = $1, opening_time = $2 ,  closing_time = $3 WHERE id = $4 RETURNING *";
-    const result = await query(SQL, [data.business_days, data.opening_time, data.closing_time, data.id]);
-    return result.rows[0];
+  const SQL =
+    "UPDATE vendor_applications SET business_days = $1, opening_time = $2 ,  closing_time = $3 WHERE id = $4 RETURNING *";
+  const result = await query(SQL, [
+    data.business_days,
+    data.opening_time,
+    data.closing_time,
+    data.id,
+  ]);
+  return result.rows[0];
 }
 
 async function submitApplication(id) {
-
-    const SQL = `
+  const SQL = `
         UPDATE vendor_applications
         SET
             status = 'SUBMITTED',
@@ -236,23 +212,23 @@ async function submitApplication(id) {
         RETURNING *
     `;
 
-    const result = await query(SQL, [id]);
+  const result = await query(SQL, [id]);
 
-    return result.rows[0];
+  return result.rows[0];
 }
-
 
 async function fetchRepairCapabilities() {
-    const SQL = "SELECT id,name FROM repair_capabilities";
-    const result = await query(SQL);
-    return result.rows;
+  const SQL = "SELECT id,name FROM repair_capabilities";
+  const result = await query(SQL);
+  return result.rows;
 }
 
-
 async function saveGarageDetails(client, data) {
-
-    await client.query("DELETE FROM  vendor_application_garage_details WHERE application_id = $1", [data.id]);
-    const SQL = `
+  await client.query(
+    "DELETE FROM  vendor_application_garage_details WHERE application_id = $1",
+    [data.id],
+  );
+  const SQL = `
         INSERT INTO vendor_application_garage_details (
             application_id,
             service_pickup_radius_km,
@@ -274,28 +250,26 @@ async function saveGarageDetails(client, data) {
         RETURNING *
     `;
 
-    const result = await client.query(SQL, [
-        data.id,
-        data.service_pickup_radius_km,
-        data.provides_pickup_drop,
-        data.no_of_service_bays,
-        data.no_of_technicians,
-        data.no_of_denting_technicians,
-        data.no_of_painters,
-        data.paint_booth_available,
-        data.vehicle_lift_available,
-        data.diagnostic_scanner_available,
-        data.wheel_alignment_machine_available,
-        data.dedicated_accident_repair_area_available
-    ]);
+  const result = await client.query(SQL, [
+    data.id,
+    data.service_pickup_radius_km,
+    data.provides_pickup_drop,
+    data.no_of_service_bays,
+    data.no_of_technicians,
+    data.no_of_denting_technicians,
+    data.no_of_painters,
+    data.paint_booth_available,
+    data.vehicle_lift_available,
+    data.diagnostic_scanner_available,
+    data.wheel_alignment_machine_available,
+    data.dedicated_accident_repair_area_available,
+  ]);
 
-    return result.rows[0];
+  return result.rows[0];
 }
 
-
 async function saveGarageCapabilities(client, data) {
-
-    const SQL = `
+  const SQL = `
         INSERT INTO vendor_application_garage_capabilities (
             application_id,
             capability_id
@@ -304,18 +278,26 @@ async function saveGarageCapabilities(client, data) {
         RETURNING *
     `;
 
-    const result = await client.query(SQL, [
-        data.id,
-        data.repair_capabilities
-    ]);
+  const result = await client.query(SQL, [data.id, data.repair_capabilities]);
 
-    return result.rows;
+  return result.rows;
 }
-
-
 
 module.exports = {
-    saveGarageDetails, saveGarageCapabilities, fetchRepairCapabilities, submitApplication, saveBusinessHours, getNextApplicationNumber, createVendorApplication, saveBusinessDetails, getSparePartTypes, getVehicleCategories, getVehicleBrands, getSparePartsCategories, saveVendorApplicationSparePartsTypes, saveVendorApplicationVehicleCategories, saveVendorApplicationBrands, saveVendorApplicationPartsCategories
-}
-
-
+  saveGarageDetails,
+  saveGarageCapabilities,
+  fetchRepairCapabilities,
+  submitApplication,
+  saveBusinessHours,
+  getNextApplicationNumber,
+  createVendorApplication,
+  saveBusinessDetails,
+  getSparePartTypes,
+  getVehicleCategories,
+  getVehicleBrands,
+  getSparePartsCategories,
+  saveVendorApplicationSparePartsTypes,
+  saveVendorApplicationVehicleCategories,
+  saveVendorApplicationBrands,
+  saveVendorApplicationPartsCategories,
+};

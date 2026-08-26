@@ -42,7 +42,6 @@
     "express": "^5.2.1",
     "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.3",
-    "module-alias": "^2.3.4",
     "morgan": "^1.11.0",
     "pg": "^8.21.0",
     "winston": "^3.19.0",
@@ -60,27 +59,10 @@
     "prettier": "^3.8.3",
     "supertest": "^7.2.2"
   },
-  "_moduleAliases": {
-    "@config": "src/config",
-    "@core": "src/core",
-    "@utils": "src/utils",
-    "@middlewares": "src/middlewares",
-    "@integrations": "src/integrations",
-    "@shared": "src/shared"
-  },
   "jest": {
     "testEnvironment": "node",
     "setupFiles": [
       "<rootDir>/tests/setup-env.js"
-    ],
-    "moduleNameMapper": {
-      "^@config/(.*)$": "<rootDir>/src/config/$1",
-      "^@core/(.*)$": "<rootDir>/src/core/$1",
-      "^@utils/(.*)$": "<rootDir>/src/utils/$1",
-      "^@middlewares/(.*)$": "<rootDir>/src/middlewares/$1",
-      "^@integrations/(.*)$": "<rootDir>/src/integrations/$1",
-      "^@shared/(.*)$": "<rootDir>/src/shared/$1",
-      "@email-templates/*": "<rootDir>/src/integrations/email/templates/$1"
-    }
+    ]
   }
 }
