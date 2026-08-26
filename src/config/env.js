@@ -33,7 +33,7 @@ const envSchema = z
     JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
     API_SETU_CLIENT_ID: z.string().min(1, "API_SETU_CLIENT_ID is REQUIRED"),
     VERIFY_GST_API_KEY: z.string().min(1, "VERIFY_GST_API_KEY is REQUIRED"),
-    AWS_ACCESS_KEY: z.string().min(1).optional(),
+    AMAZON_AWS_ACCESS_KEY: z.string().min(1).optional(),
     AWS_ACCESS_KEY_SECRET: z.string().min(1).optional(),
     AWS_REGION: z.string().min(1, "AWS_REGION is required"),
     AWS_BUCKET_NAME: z.string().min(1, "AWS_BUCKET_NAME is required"),
@@ -106,7 +106,7 @@ module.exports = {
   },
 
   aws: {
-    accessKeyId: env.AWS_ACCESS_KEY,
+    accessKeyId: env.AMAZON_AWS_ACCESS_KEY,
     secretAccessKey: env.AWS_ACCESS_KEY_SECRET,
     bucketName: env.AWS_BUCKET_NAME,
     region: env.AWS_REGION,
