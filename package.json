@@ -5,7 +5,7 @@
   "main": "/src/server.js",
   "scripts": {
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
-    "start": "node src/server.js --env development",
+    "start": "node src/server.js",
     "dev": "nodemon src/server.js --env development",
     "start:uat": "node src/server.js --env uat",
     "start:production": "node src/server.js --env production",

@@ -42,7 +42,7 @@ const envSchema = z
     UPLOAD_MAX_FILE_SIZE_MB: z.coerce.number().int().min(1).max(50).default(15),
   })
   .superRefine((values, context) => {
-    const hasAccessKey = Boolean(values.AWS_ACCESS_KEY);
+    const hasAccessKey = Boolean(values.AMAZON_AWS_ACCESS_KEY);
     const hasSecretKey = Boolean(values.AWS_ACCESS_KEY_SECRET);
 
     if (hasAccessKey !== hasSecretKey) {
