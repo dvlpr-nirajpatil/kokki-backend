@@ -28,6 +28,28 @@ configuration key is added.
 
 Tests use `.env.development` and keep Jest's internal `test` runtime mode.
 
+## Vercel deployment
+
+Do not upload or create `.env.*` files on Vercel. Add every configuration key
+and value under Project Settings → Environment Variables; do not create one
+multiline variable named `.env`. Vercel injects those values directly into the
+application, so the file loader is skipped during builds and function execution.
+
+The Vercel environments map to this project as follows:
+
+| Vercel environment | Application environment |
+| ------------------ | ----------------------- |
+| Development        | Development             |
+| Preview            | UAT                     |
+| Custom `uat`       | UAT                     |
+| Production         | Production              |
+
+Assign UAT credentials to Vercel's Preview environment (or a custom `uat`
+environment) and production credentials only to Production. Redeploy after
+adding or changing variables because existing deployments are not updated. Keep
+Vercel's “Automatically expose System Environment Variables” setting enabled so
+the application receives `VERCEL_ENV` and `VERCEL_TARGET_ENV`.
+
 ## Database configuration
 
 Development can use the individual `DB_HOST`, `DB_PORT`, `DB_USER`,

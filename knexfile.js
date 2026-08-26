@@ -9,7 +9,7 @@ const {
   parseDatabaseConfig,
 } = require("./src/config/database");
 
-loadEnvironment(getCliEnvironment() || "development");
+loadEnvironment(getCliEnvironment());
 const databaseConfig = parseDatabaseConfig(process.env);
 
 /** @type {import("knex").Knex.Config} */
