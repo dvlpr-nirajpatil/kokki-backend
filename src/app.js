@@ -27,11 +27,13 @@ app.use(requestLogger);
 app.use("/api/v1", require("./router/v1.router"));
 
 app.get("/health", (req, res) => {
-  logger.error("Something Went Wrong With The Application!");
-  console.log("Something went wrong");
-  console.info("Something went wrong");
   return response.success(res, 200, "Server is Healthy");
 });
+
+
+app.use("/", (req, res) => {
+  return response.success(res, 200, "Welcome to Kokki UAT Backend")
+})
 
 app.use(errorHandler);
 
