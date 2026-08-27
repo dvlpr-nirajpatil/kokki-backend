@@ -9,6 +9,8 @@ const corsOptions = require("./config/cors");
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 app.use(helmet());
 
 app.use(
@@ -29,7 +31,6 @@ app.use("/api/v1", require("./router/v1.router"));
 app.get("/health", (req, res) => {
   return response.success(res, 200, "Server is Healthy");
 });
-
 
 app.use("/", (req, res) => {
   return response.success(res, 200, "Welcome to Kokki UAT Backend")
