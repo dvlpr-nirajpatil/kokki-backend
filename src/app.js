@@ -1,10 +1,11 @@
 const express = require("express");
 const cors = require("cors");
 const { requestLogger, errorHandler } = require("./middlewares");
-const { response } = require("./core");
+const { response, logger } = require("./core");
 const helmet = require("helmet");
 const compression = require("compression");
 const corsOptions = require("./config/cors");
+
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use(requestLogger);
 app.use("/api/v1", require("./router/v1.router"));
 
 app.get("/health", (req, res) => {
+  logger.info("Application is running healthy !");
   return response.success(res, 200, "Server is Healthy");
 });
 
