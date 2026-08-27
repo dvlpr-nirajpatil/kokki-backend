@@ -21,6 +21,7 @@ const IMAGE_CONTENT_TYPES = Object.freeze({
   "image/heic": "heic",
   "image/heif": "heif",
 });
+
 const DOCUMENT_CONTENT_TYPES = Object.freeze({
   ...IMAGE_CONTENT_TYPES,
   "application/pdf": "pdf",
@@ -336,6 +337,7 @@ async function saveRequestDocuments(requestId, userId, documents) {
       ...document,
       url: `${env.aws.cdnBaseUrl}/${document.object_key}`,
     }));
+
   } catch (error) {
     logger.error("Unable to save estimate request documents", {
       error: error.message,

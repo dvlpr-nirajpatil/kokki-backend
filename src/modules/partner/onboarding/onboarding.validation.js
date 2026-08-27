@@ -220,7 +220,130 @@ const saveGarageCapabilities = z.object({
         })
     })
 });
+
+
+
+const saveVehiclesAndInsuranceDetails = z.object({
+    params: requestIdParams,
+
+    body: z.object({
+        vehicle_types: z.array(z.uuid()).min(1),
+        brands_serviced: z.array(z.uuid()).min(1),
+
+        currently_handles_insurance_repairs: z.boolean(),
+
+        no_of_insurance_repair_experience: z.number().optional(),
+        insurance_vehicles_per_month: z.number().optional(),
+        has_dedicated_insurance_coordinator: z.boolean().optional(),
+        has_surveyor_inspection_facility: z.boolean().optional(),
+        has_previous_cashless_repair_experience: z.boolean().optional(),
+
+    }).superRefine((data, ctx) => {
+        if (!data.currently_handles_insurance_repairs) return;
+
+        const requiredFields = [
+            "no_of_insurance_repair_experience",
+            "insurance_vehicles_per_month",
+            "has_dedicated_insurance_coordinator",
+            "has_surveyor_inspection_facility",
+            "has_previous_cashless_repair_experience",
+        ];
+
+        requiredFields.forEach((field) => {
+            if (data[field] === undefined) {
+                ctx.addIssue({
+                    code: "custom",
+                    path: [field],
+                    message: `${field} is required`,
+                });
+            }
+        });
+    }),
+});
+
+
+
+const presignAssets = z.object({
+    params: requestIdParams,
+    body: z
+        .object({
+            contentType: z.string().trim().min(1).max(100),
+        })
+        .strict(),
+});
+
+const saveShopOrGarageImages = z.object({
+    params: requestIdParams,
+    body: z.array(
+        z.object({
+            photo_type: z.enum([
+                "GARAGE_FRONT",
+                "GARAGE_INTERIOR",
+                "SERVICE_BAY",
+                "PAINT_BOOTH",
+                "VEHICLE_LIFT",
+                "DENTING_AREA",
+                "ACCIDENT_REPAIR_AREA",
+                "EQUIPMENT",
+                "OTHER"
+            ]),
+
+            object_key: z.string()
+                .trim()
+                .min(1, "object_key is required"),
+
+            sort_order: z.number()
+                .int()
+                .nonnegative()
+                .nullable()
+                .optional()
+        })
+    )
+        .min(1, "At least one image is required")
+});
+
+
+
+const saveApplicationDocuments = z.object({
+    params: requestIdParams,
+
+    body: z.array(
+        z.object({
+            document_type: z.enum([
+                "GST_CERTIFICATE",
+                "PAN",
+                "SHOP_ACT",
+                "UDYAM",
+                "CANCELLED_CHEQUE",
+                "OWNER_ID",
+                "OTHER"
+            ]),
+
+            file_type: z.enum(
+                ["IMAGE", "PDF"],
+                {
+                    message: "file_type must be IMAGE or PDF"
+                }
+            ),
+
+            object_key: requiredString("object_key")
+                .trim(),
+
+            sort_order: z.number()
+                .int()
+                .nonnegative()
+                .nullable()
+                .optional()
+        })
+    )
+        .min(1, "At least one document is required")
+});
+
 module.exports = {
+    saveApplicationDocuments,
+    saveShopOrGarageImages,
+    presignAssets,
+    saveVehiclesAndInsuranceDetails,
     submitApplication,
     createApplication,
     saveBusinessDetails,

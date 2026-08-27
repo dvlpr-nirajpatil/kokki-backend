@@ -40,6 +40,11 @@ const envSchema = z
     AWS_CLOUDFRONT_DISTRIBUTION_ID: z.string().min(1).optional(),
     CDN_BASE_URL: z.string().url().default("https://cdn.kokki.in"),
     UPLOAD_MAX_FILE_SIZE_MB: z.coerce.number().int().min(1).max(50).default(15),
+    TWO_FACTOR_API_KEY: z.string().min(1, "TWO_FACTOR_API_KEY is required"),
+    SEND_OTP_TEMPLATE: z.string().min(1, "SEND_OTP_TEMPLATE is required"),
+    TEST_CREDENTIALS: z.string().min(1, "SEND_OTP_TEMPLATE is required"),
+    STATIC_OTP: z.string().min(4, "STATIC_OTP is required")
+
   })
   .superRefine((values, context) => {
     const hasAccessKey = Boolean(values.AMAZON_AWS_ACCESS_KEY);
@@ -113,8 +118,16 @@ module.exports = {
     cloudFrontDistributionId: env.AWS_CLOUDFRONT_DISTRIBUTION_ID,
     cdnBaseUrl: env.CDN_BASE_URL.replace(/\/+$/, ""),
   },
-
   upload: {
     maxFileSizeBytes: env.UPLOAD_MAX_FILE_SIZE_MB * 1024 * 1024,
   },
+
+  otp: {
+    apiKey: env.TWO_FACTOR_API_KEY,
+    sendOtpTemplate: env.SEND_OTP_TEMPLATE,
+    testCredentials: env.TEST_CREDENTIALS,
+    staticOtp: env.STATIC_OTP
+  }
+
+
 };

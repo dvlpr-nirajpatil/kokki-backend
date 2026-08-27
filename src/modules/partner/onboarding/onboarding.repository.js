@@ -283,7 +283,131 @@ async function saveGarageCapabilities(client, data) {
   return result.rows;
 }
 
+
+async function saveVehiclesAndInsuranceDetails(client, data) {
+  const SQL = `
+    UPDATE vendor_application_garage_details
+    SET
+      currently_handles_insurance_repairs = $1,
+      no_of_insurance_repair_experience = $2,
+      insurance_vehicles_per_month = $3,
+      has_dedicated_insurance_coordinator = $4,
+      has_surveyor_inspection_facility = $5,
+      has_previous_cashless_repair_experience = $6
+    WHERE application_id = $7
+    RETURNING *
+  `;
+
+  const result = await client.query(SQL, [
+    data.currently_handles_insurance_repairs,
+    data.no_of_insurance_repair_experience,
+    data.insurance_vehicles_per_month,
+    data.has_dedicated_insurance_coordinator,
+    data.has_surveyor_inspection_facility,
+    data.has_previous_cashless_repair_experience,
+    data.id
+  ]);
+
+  return result.rows[0];
+}
+
+async function saveShopOrGarageImages(data) {
+
+  const photoTypes = data.images.map(
+    image => image.photo_type
+  );
+
+  const objectKeys = data.images.map(
+    image => image.object_key
+  );
+
+  const sortOrders = data.images.map(
+    image => image.sort_order ?? 0
+  );
+
+  const SQL = `
+        INSERT INTO vendor_application_garage_photos (
+            application_id,
+            photo_type,
+            object_key,
+            sort_order
+        )
+        SELECT
+            $1,
+            *
+        FROM unnest(
+            $2::vendor_application_garage_photo_type[],
+            $3::text[],
+            $4::integer[]
+        )
+        RETURNING *
+    `;
+
+  const result = await query(SQL, [
+    data.id,
+    photoTypes,
+    objectKeys,
+    sortOrders
+  ]);
+
+  return result.rows;
+
+}
+
+
+async function saveUploadedDocuments(data) {
+
+  const documentTypes = data.documents.map(
+    document => document.document_type
+  );
+
+  const fileTypes = data.documents.map(
+    document => document.file_type
+  );
+
+  const objectKeys = data.documents.map(
+    document => document.object_key
+  );
+
+  const sortOrders = data.documents.map(
+    document => document.sort_order ?? 0
+  );
+
+  const SQL = `
+        INSERT INTO vendor_application_documents (
+            application_id,
+            document_type,
+            file_type,
+            object_key,
+            sort_order
+        )
+        SELECT
+            $1,
+            *
+        FROM unnest(
+            $2::vendor_application_document_type[],
+            $3::vendor_application_document_file_type[],
+            $4::text[],
+            $5::integer[]
+        )
+        RETURNING *
+    `;
+
+  const result = await query(SQL, [
+    data.id,
+    documentTypes,
+    fileTypes,
+    objectKeys,
+    sortOrders
+  ]);
+
+  return result.rows;
+}
+
 module.exports = {
+  saveUploadedDocuments,
+  saveShopOrGarageImages,
+  saveVehiclesAndInsuranceDetails,
   saveGarageDetails,
   saveGarageCapabilities,
   fetchRepairCapabilities,

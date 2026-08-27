@@ -129,3 +129,97 @@ module.exports.saveGarageCapabilities = async (req, res) => {
     throw e;
   }
 };
+
+
+module.exports.getVehiclesAndInsuranceExpeirnceFormFields = async (req, res) => {
+  try {
+
+    const data = await service.getVehiclesAndExperienceFormFields();
+    return response.success(res, 200, "Vehicle and insurance experince form fields get successfully !", data);
+
+  } catch (e) {
+    throw e;
+  }
+}
+
+module.exports.saveVehiclesAndInsuranceDetails = async (req, res) => {
+  try {
+
+    const data = req.validatedData.body;
+
+    data.id = req.validatedData.params.id;
+
+    const result = await service.saveVehiclesAndInsuranceDetails(data);
+
+    return response.success(res, 200, "Vehicle And Insurance Details Saved Successfully !", result);
+
+  } catch (e) {
+    throw e;
+  }
+}
+
+
+module.exports.presignLocationImages = async (req, res) => {
+  const { id } = req.validatedData.params;
+  const { contentType } = req.validatedData.body;
+  const presign = await service.createLocationImagePresign(
+    id,
+    contentType,
+  );
+
+  return response.success(res, 200, "Location image upload URL created", presign);
+};
+
+
+module.exports.saveGarageOrShopImages = async (req, res) => {
+  try {
+
+    const body = req.validatedData.body;
+    const application_id = req.validatedData.params.id;
+
+    const data = {
+      id: application_id,
+      images: body
+    }
+
+
+    const images = await service.saveGarageAndShopImages(data);
+
+
+    return response.success(res, 200, "Images Stored Successfully !", images);
+  } catch (e) {
+    throw e;
+  }
+}
+
+
+
+module.exports.presignOnboardingDocuments = async (req, res) => {
+  const { id } = req.validatedData.params;
+  const { contentType } = req.validatedData.body;
+  const presign = await service.createApplicationDocumentsPresign(
+    id,
+    contentType,
+  );
+
+  return response.success(res, 200, "Application document upload URL created", presign);
+};
+
+
+
+module.exports.saveApplicationDocuments = async (req, res) => {
+  try {
+    const id = req.validatedData.params.id;
+    const documents = req.validatedData.body;
+    const data = {
+      id, documents
+    };
+
+    const uploadedDocuments = await service.saveApplicationDocuments(data);
+
+    return response.success(res, 200, "Documents Successfuly Stored !", uploadedDocuments);
+
+  } catch (e) {
+    throw e;
+  }
+}
