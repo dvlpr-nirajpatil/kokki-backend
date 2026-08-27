@@ -27,7 +27,9 @@ app.use(requestLogger);
 app.use("/api/v1", require("./router/v1.router"));
 
 app.get("/health", (req, res) => {
-  logger.info("Application is running healthy !");
+  logger.error("Something Went Wrong With The Application!");
+  console.log("Something went wrong");
+  console.info("Something went wrong");
   return response.success(res, 200, "Server is Healthy");
 });
 
