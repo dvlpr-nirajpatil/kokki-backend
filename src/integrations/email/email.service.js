@@ -1,6 +1,7 @@
 const {
     SendEmailCommand,
 } = require("@aws-sdk/client-ses");
+const env = require("../../config/env");
 
 const sesClient = require("./ses.client");
 
@@ -11,7 +12,7 @@ async function sendEmail({
     text,
 }) {
     const command = new SendEmailCommand({
-        Source: process.env.EMAIL_FROM,
+        Source: env.emailFrom,
 
         Destination: {
             ToAddresses: [to],
