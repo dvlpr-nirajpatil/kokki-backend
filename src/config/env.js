@@ -43,8 +43,8 @@ const envSchema = z
     TWO_FACTOR_API_KEY: z.string().min(1, "TWO_FACTOR_API_KEY is required"),
     SEND_OTP_TEMPLATE: z.string().min(1, "SEND_OTP_TEMPLATE is required"),
     TEST_CREDENTIALS: z.string().min(1, "SEND_OTP_TEMPLATE is required"),
-    STATIC_OTP: z.string().min(4, "STATIC_OTP is required")
-
+    STATIC_OTP: z.string().min(4, "STATIC_OTP is required"),
+    EMAIL_FROM: z.email("EMAIL FROM REQUIRED")
   })
   .superRefine((values, context) => {
     const hasAccessKey = Boolean(values.AMAZON_AWS_ACCESS_KEY);
@@ -127,7 +127,8 @@ module.exports = {
     sendOtpTemplate: env.SEND_OTP_TEMPLATE,
     testCredentials: env.TEST_CREDENTIALS,
     staticOtp: env.STATIC_OTP
-  }
+  },
 
+  emailFrom: env.EMAIL_FROM
 
 };
