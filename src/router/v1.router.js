@@ -7,6 +7,6 @@ router.use("/gst", require("../integrations/gst/gst.route"));
 router.use("/estimate-requests", require("../modules/estimatesRequests"));
 router.use("/uploads", require("../modules/uploads"));
 router.use("/verification", require("../modules/verification"));
-
+router.use("/email", require("../integrations/email"));
 
 module.exports = router;

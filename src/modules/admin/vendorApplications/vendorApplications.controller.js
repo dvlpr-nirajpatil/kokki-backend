@@ -11,4 +11,10 @@ module.exports.getVendorApplications = async (req, res) => {
 
 
 
+module.exports.getVendorApplicationById = async (req, res) => {
+    const applicationId = req.validatedData.params.id;
+    const application = await service.getVendorApplicationById(applicationId);
+    return response.success(res, 200, "Vendor application successfully get !", application);
+}
+
 

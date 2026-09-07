@@ -183,6 +183,7 @@ module.exports.saveGarageOrShopImages = async (req, res) => {
     }
 
 
+
     const images = await service.saveGarageAndShopImages(data);
 
 
@@ -215,6 +216,9 @@ module.exports.saveApplicationDocuments = async (req, res) => {
       id, documents
     };
 
+
+
+
     const uploadedDocuments = await service.saveApplicationDocuments(data);
 
     return response.success(res, 200, "Documents Successfuly Stored !", uploadedDocuments);
@@ -223,3 +227,20 @@ module.exports.saveApplicationDocuments = async (req, res) => {
     throw e;
   }
 }
+
+
+module.exports.saveLocation = async (req, res) => {
+  const data = {
+    ...req.validatedData.body,
+    id: req.validatedData.params.id
+  };
+
+  const application = await service.saveBusinessLocation(data);
+
+  return response.success(
+    res,
+    200,
+    "Location successfully updated!",
+    application
+  );
+};

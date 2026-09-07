@@ -46,9 +46,8 @@ async function saveBusinessDetails(client, data) {
             state = $7,
             city = $8,
             pincode = $9,
-            latitude = $10,
-            longitude = $11
-        WHERE id = $12
+            updated_at = NOW()
+        WHERE id = $10
         RETURNING *
     `;
 
@@ -62,9 +61,7 @@ async function saveBusinessDetails(client, data) {
     data.state,
     data.city,
     data.pincode,
-    data.latitude,
-    data.longitude,
-    data.id,
+    data.id
   ]);
 
   return result.rows[0];
@@ -73,6 +70,20 @@ async function saveBusinessDetails(client, data) {
 async function getSparePartTypes() {
   const SQL = "SELECT id, name From spare_parts_types";
   const result = await query(SQL);
+  return result.rows;
+}
+
+async function getBusinessTypesForSparePartsShop() {
+  const SQL = `
+        SELECT id, name
+        FROM business_types
+        WHERE business_category = $1
+        AND is_active = true
+        ORDER BY name ASC
+    `;
+
+  const result = await query(SQL, ["SPARE_PARTS_SHOP"]);
+
   return result.rows;
 }
 
@@ -113,6 +124,34 @@ async function saveVendorApplicationSparePartsTypes(
         SELECT $1, unnest($2::uuid[])
         RETURNING *
     `;
+
+  const result = await client.query(SQL, [applicationId, types]);
+
+  return result.rows;
+}
+
+async function saveVendorApplicationBusinessTypes(
+  client,
+  applicationId,
+  types,
+) {
+  await client.query(
+    `DELETE FROM vendor_application_business_types
+         WHERE vendor_application_id = $1`,
+    [applicationId],
+  );
+
+  const SQL = `
+        INSERT INTO vendor_application_business_types (
+            vendor_application_id,
+            business_type_id
+        )
+        SELECT $1, unnest($2::uuid[])
+        RETURNING *
+    `;
+
+
+  console.log(types);
 
   const result = await client.query(SQL, [applicationId, types]);
 
@@ -404,7 +443,30 @@ async function saveUploadedDocuments(data) {
   return result.rows;
 }
 
+
+async function saveBusinessLocation(data) {
+  const SQL = `
+        UPDATE vendor_applications
+        SET
+            latitude = $1,
+            longitude = $2
+        WHERE id = $3
+        RETURNING *
+    `;
+
+  const result = await query(SQL, [
+    data.lat,
+    data.lng,
+    data.id
+  ]);
+
+  return result.rows[0];
+}
+
 module.exports = {
+  saveVendorApplicationBusinessTypes,
+  getSparePartsVendorTypes: getBusinessTypesForSparePartsShop,
+  saveBusinessLocation,
   saveUploadedDocuments,
   saveShopOrGarageImages,
   saveVehiclesAndInsuranceDetails,

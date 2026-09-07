@@ -90,16 +90,6 @@ const saveBusinessDetails = z.object({
                 /^\d{6}$/,
                 "Pincode must be a valid 6-digit Indian PIN code"
             ),
-
-        latitude: z.coerce
-            .number()
-            .min(-90, "Invalid latitude")
-            .max(90, "Invalid latitude"),
-
-        longitude: z.coerce
-            .number()
-            .min(-180, "Invalid longitude")
-            .max(180, "Invalid longitude")
     })
 });
 
@@ -108,6 +98,9 @@ const saveSparePartsProfile = z.object({
     params: requestIdParams,
 
     body: z.object({
+        businessTypes: z.array(
+            z.uuid("Invalid business type ID")
+        ).min(1, "Select at least one business type"),
         partTypes: z.array(
             z.uuid("Invalid part type ID")
         ).min(1, "Select at least one part type"),
@@ -153,6 +146,11 @@ const submitApplication = z.object(
         params: requestIdParams
     }
 );
+
+
+
+
+
 
 
 const saveGarageCapabilities = z.object({
@@ -285,6 +283,9 @@ const saveShopOrGarageImages = z.object({
                 "DENTING_AREA",
                 "ACCIDENT_REPAIR_AREA",
                 "EQUIPMENT",
+                "SHOP_FRONT",
+                "SHOP_INTERIOR",
+                "STOCK_AREA",
                 "OTHER"
             ]),
 
@@ -339,7 +340,26 @@ const saveApplicationDocuments = z.object({
         .min(1, "At least one document is required")
 });
 
+const saveLocation = z.object({
+    params: requestIdParams,
+
+    body: z.object({
+        lat: z.number({
+            error: "Latitude is required"
+        })
+            .min(-90, "Invalid latitude")
+            .max(90, "Invalid latitude"),
+
+        lng: z.number({
+            error: "Longitude is required"
+        })
+            .min(-180, "Invalid longitude")
+            .max(180, "Invalid longitude")
+    })
+});
+
 module.exports = {
+    saveLocation,
     saveApplicationDocuments,
     saveShopOrGarageImages,
     presignAssets,

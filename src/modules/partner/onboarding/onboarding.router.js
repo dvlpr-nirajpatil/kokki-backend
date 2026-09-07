@@ -27,11 +27,15 @@ router.post(
     validator(validations.saveBusinessHours),
     controller.saveBusinessHours,
 );
+
 router.post(
     "/:id/submit-application",
     validator(validations.submitApplication),
     controller.submitApplication,
 );
+
+router.post("/:id/save-location", validator(validations.saveLocation), controller.saveLocation);
+
 
 // GARAGE_SPECIFIC
 router.post(
