@@ -50,6 +50,24 @@ exports.seed = async function (knex) {
 
       is_active: true
 
+    },
+
+    {
+
+      name: "Two Wheeler",
+
+      code: "TWO_WHEELER",
+
+      is_active: true
+
+    }, {
+
+      name: "Miscellaneous Vehicle",
+
+      code: "MISCELLANEOUS_VEHICLE",
+
+      is_active: true
+
     }
 
   ]);

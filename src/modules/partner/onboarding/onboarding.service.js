@@ -4,6 +4,10 @@ const { pool, query } = require("../../../config/db");
 const crypto = require("crypto");
 const s3Presign = require("../../../integrations/s3/presign.service");
 const env = require("../../../config/env");
+const { sendEmail } = require("../../../integrations/email/email.service");
+const {
+  vendorApplicationSubmittedTemplate,
+} = require("../../../integrations/email/templates/vendor-application-submitted.template");
 
 
 async function createApplication(data) {
@@ -53,12 +57,13 @@ async function saveBusinessDetails(data) {
 
 async function getFormFields() {
   try {
-    const [partTypes, vehicleCategories, vehicleBrands, partsCategories] =
+    const [partTypes, vehicleCategories, vehicleBrands, partsCategories, vendorTypes] =
       await Promise.all([
         repository.getSparePartTypes(),
         repository.getVehicleCategories(),
         repository.getVehicleBrands(),
         repository.getSparePartsCategories(),
+        repository.getSparePartsVendorTypes()
       ]);
 
     return {
@@ -66,6 +71,7 @@ async function getFormFields() {
       vehicleCategories,
       vehicleBrands,
       partsCategories,
+      vendorTypes
     };
   } catch (e) {
     throw new AppError(e);
@@ -77,6 +83,9 @@ async function saveSparePartsProfile(data) {
 
   try {
     await client.query("BEGIN");
+
+
+    const businessTypes = await repository.saveVendorApplicationBusinessTypes(client, data.id, data.businessTypes);
 
     const partTypes = await repository.saveVendorApplicationSparePartsTypes(
       client,
@@ -107,6 +116,7 @@ async function saveSparePartsProfile(data) {
     await client.query("COMMIT");
 
     return {
+      businessTypes,
       partTypes,
       vehicleCategories,
       brands,
@@ -132,6 +142,30 @@ async function saveBusinessHours(data) {
 async function submitApplication(id) {
   try {
     const application = await repository.submitApplication(id);
+
+    const submittedAt = new Intl.DateTimeFormat("en-IN", {
+      timeZone: "Asia/Kolkata",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true
+    }).format(new Date(application.submitted_at));
+
+    const email = vendorApplicationSubmittedTemplate({
+      email: application.email,
+      vendorName: application.name,
+      businessName: application.trade_name,
+      applicationNumber: application.application_no,
+      vendorType: application.vendor_type == "SPARE_PARTS" ? "Spare Parts Vendorship" : "Service Vendorship",
+      submittedAt: submittedAt,
+      statusUrl: `https://www.kokki.in/application/${application.id}/status`,
+      supportEmail: "support@kokki.in",
+    });
+
+    await sendEmail(email);
+
     return application;
   } catch (e) {
     throw new AppError(e);
@@ -324,7 +358,19 @@ async function saveApplicationDocuments(data) {
 }
 
 
+async function saveBusinessLocation(data) {
+  const application = await repository.saveBusinessLocation(data);
+
+  if (!application) {
+    throw new AppError("Vendor application not found", 404);
+  }
+
+  return application;
+}
+
+
 module.exports = {
+  saveBusinessLocation,
   saveApplicationDocuments,
   saveGarageAndShopImages,
   createApplicationDocumentsPresign,
