@@ -32,15 +32,7 @@ exports.seed = async function (knex) {
 
     },
 
-    {
 
-      name: "SUVs",
-
-      code: "SUV",
-
-      is_active: true
-
-    },
 
     {
 

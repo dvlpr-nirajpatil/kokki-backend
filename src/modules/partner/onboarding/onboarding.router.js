@@ -38,14 +38,17 @@ router.post("/:id/save-location", validator(validations.saveLocation), controlle
 
 
 // GARAGE_SPECIFIC
-router.post(
-    "/garage/:id/capabilities",
-    validator(validations.saveGarageCapabilities),
-    controller.saveGarageCapabilities,
-);
-router.get("/garage/repair-capabilities", controller.fetchRepairCapabilities);
-router.get("/garage/vehicles-and-insurance-form-fields", controller.getVehiclesAndInsuranceExpeirnceFormFields);
-router.post("/garage/:id/vehicles-and-insurance", validator(validations.saveVehiclesAndInsuranceDetails), controller.saveVehiclesAndInsuranceDetails);
+
+router.get("/garage/step-four-fields", controller.getSetpFourFormFieldsServiceVendor);
+router.post("/garage/:id/step-four", validator(validations.saveStepFourDetailsServiceVendor), controller.saveStepFourServiceVendor);
+
+router.get("/garage/step-five-fields", controller.getSetpFiveFormFieldsServiceVendor);
+router.post("/garage/:id/step-five", validator(validations.saveStepFiveServiceVendor),
+    controller.saveStepFiveServiceVendor,);
+
+router.get("/garage/step-six-fields", controller.getStepSixFormFieldsServiceVendor);
+router.post("/garage/:id/step-six", validator(validations.saveStepSixDetails), controller.saveStepSixServiceVendor);
+
 
 
 router.post("/:id/images/presign", validator(validations.presignAssets), controller.presignLocationImages);
