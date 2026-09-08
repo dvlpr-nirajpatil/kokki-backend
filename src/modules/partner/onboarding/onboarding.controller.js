@@ -1,22 +1,41 @@
 const { response } = require("../../../core/index");
 const service = require("./onboarding.service");
+const jwt = require("../../../utils/jwt");
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+// CREATE VENDOR APPLICATION STEP - 1 
+//----------------------------------------------------------------------------------------------------------------------------------------
 
 module.exports.createVendorApplication = async (req, res) => {
   try {
+
     const data = req.validatedData.body;
 
-    const request = await service.createApplication(data);
+    const application = await service.createApplication(data);
+
+    const payload = {
+      id: application.id
+    }
+
+    const accessToken = await jwt.getAccessToken(payload);
 
     return response.success(
       res,
       201,
       "Application Successfully Created !",
-      request,
+      { application, accessToken },
     );
+
   } catch (e) {
     throw e;
   }
 };
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+// SAVE BUSINESS DETAILS STEP - 2
+//----------------------------------------------------------------------------------------------------------------------------------------
 
 module.exports.saveBusinessDetails = async (req, res) => {
   try {
@@ -37,6 +56,10 @@ module.exports.saveBusinessDetails = async (req, res) => {
   }
 };
 
+//----------------------------------------------------------------------------------------------------------------------------------------
+// SUBMIT APPLICATION LAST STEP
+//----------------------------------------------------------------------------------------------------------------------------------------
+
 module.exports.submitApplication = async (req, res) => {
   try {
     const id = req.validatedData.params.id;
@@ -52,8 +75,10 @@ module.exports.submitApplication = async (req, res) => {
   }
 };
 
+
+
 //----------------------------------------------------------------------------------------------------------------------------------------
-// SPARE PARTS VENDOR SPECIFIC
+// SPARES PARTS STEP 3 GET FIELDS
 //----------------------------------------------------------------------------------------------------------------------------------------
 
 module.exports.getSparePartsProfileFormFields = async (req, res) => {
@@ -64,6 +89,10 @@ module.exports.getSparePartsProfileFormFields = async (req, res) => {
     throw e;
   }
 };
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+// SPARE PARTS STEP 3 SAVE
+//----------------------------------------------------------------------------------------------------------------------------------------
 
 module.exports.saveSparePartsProfile = async (req, res) => {
   try {
@@ -77,6 +106,11 @@ module.exports.saveSparePartsProfile = async (req, res) => {
     throw e;
   }
 };
+
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+// SAVE BUSINESS DETAILS
+//----------------------------------------------------------------------------------------------------------------------------------------
 
 module.exports.saveBusinessHours = async (req, res) => {
   try {
@@ -125,7 +159,6 @@ module.exports.getVehiclesAndInsuranceExpeirnceFormFields = async (req, res) => 
     throw e;
   }
 }
-
 
 
 

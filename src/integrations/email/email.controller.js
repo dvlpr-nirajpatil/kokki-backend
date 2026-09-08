@@ -17,7 +17,6 @@ module.exports.sendTestEmail = async (req, res) => {
             applicationNumber: "KVA-000001",
             vendorType: "Spare Parts Vendor",
             submittedAt: "7 September 2026, 11:30 AM",
-            statusUrl: "https://example.com/application/KVA-000001",
             supportEmail: "support@kokki.com",
         });
 
@@ -29,4 +28,3 @@ module.exports.sendTestEmail = async (req, res) => {
         throw new AppError(e);
     }
 }
-
