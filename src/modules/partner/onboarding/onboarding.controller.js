@@ -114,22 +114,6 @@ module.exports.fetchRepairCapabilities = async (req, res) => {
   }
 };
 
-module.exports.saveGarageCapabilities = async (req, res) => {
-  try {
-    const data = req.validatedData.body;
-    data.id = req.validatedData.params.id;
-    const garage = await service.saveGarageCapabilties(data);
-    return response.success(
-      res,
-      200,
-      "Garage Capabilties updated successfully !",
-      garage,
-    );
-  } catch (e) {
-    throw e;
-  }
-};
-
 
 module.exports.getVehiclesAndInsuranceExpeirnceFormFields = async (req, res) => {
   try {
@@ -142,21 +126,7 @@ module.exports.getVehiclesAndInsuranceExpeirnceFormFields = async (req, res) => 
   }
 }
 
-module.exports.saveVehiclesAndInsuranceDetails = async (req, res) => {
-  try {
 
-    const data = req.validatedData.body;
-
-    data.id = req.validatedData.params.id;
-
-    const result = await service.saveVehiclesAndInsuranceDetails(data);
-
-    return response.success(res, 200, "Vehicle And Insurance Details Saved Successfully !", result);
-
-  } catch (e) {
-    throw e;
-  }
-}
 
 
 module.exports.presignLocationImages = async (req, res) => {
@@ -244,3 +214,78 @@ module.exports.saveLocation = async (req, res) => {
     application
   );
 };
+
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+// SERVICE VENDOR ONBOARDING - STEP 4
+//----------------------------------------------------------------------------------------------------------------------------------------
+
+module.exports.getSetpFourFormFieldsServiceVendor = async (req, res) => {
+  const data = await service.getStepFourFieldsServiceVendorOnboarding();
+  return response.success(res, 200, "Step 4 form fields fetched successfully!", data);
+}
+
+module.exports.saveStepFourServiceVendor = async (req, res) => {
+
+  const data = {
+    id: req.validatedData.params.id,
+    ...req.validatedData.body
+  }
+
+  const details = await service.saveStepFourDetailsServiceVendor(data);
+
+  return response.success(res, 200, "Step Four details successfully stored!", details);
+
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+// SERVICE VENDOR ONBOARDING - STEP 5
+//----------------------------------------------------------------------------------------------------------------------------------------
+
+module.exports.getSetpFiveFormFieldsServiceVendor = async (req, res) => {
+  const data = await service.getStepFiveFieldsServiceVendorOnboarding();
+  return response.success(res, 200, "Step Five form fields fetched successfully!", data);
+}
+
+module.exports.saveStepFiveServiceVendor = async (req, res) => {
+  try {
+    const data = req.validatedData.body;
+    data.id = req.validatedData.params.id;
+    const garage = await service.saveGarageCapabilties(data);
+    return response.success(
+      res,
+      200,
+      "Garage Capabilties updated successfully !",
+      garage,
+    );
+  } catch (e) {
+    throw e;
+  }
+};
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+// SERVICE VENDOR - STEP 6
+//----------------------------------------------------------------------------------------------------------------------------------------
+module.exports.getStepSixFormFieldsServiceVendor = async (req, res) => {
+  const data = await service.getStepSixFieldsServiceVendorOnboarding();
+  return response.success(res, 200, "Step Six form fields fetched successfully!", data);
+}
+
+module.exports.saveStepSixServiceVendor = async (req, res) => {
+  try {
+
+    const data = req.validatedData.body;
+
+    data.id = req.validatedData.params.id;
+
+    const result = await service.saveStepSixDetailsServiceVendor(data);
+
+    return response.success(res, 200, "Step 6 data save successfully", result);
+
+  } catch (e) {
+    throw e;
+  }
+}

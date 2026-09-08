@@ -88,8 +88,8 @@ async function getBusinessTypesForSparePartsShop() {
 }
 
 async function getVehicleCategories() {
-  const SQL = "SELECT id, name From vehicle_categories";
-  const result = await query(SQL);
+  const SQL = "SELECT id, name From vehicle_categories WHERE is_active = $1";
+  const result = await query(SQL, [true]);
   return result.rows;
 }
 
@@ -151,7 +151,7 @@ async function saveVendorApplicationBusinessTypes(
     `;
 
 
-  console.log(types);
+
 
   const result = await client.query(SQL, [applicationId, types]);
 
@@ -259,6 +259,20 @@ async function submitApplication(id) {
 async function fetchRepairCapabilities() {
   const SQL = "SELECT id,name FROM repair_capabilities";
   const result = await query(SQL);
+  return result.rows;
+}
+
+async function getBusinessTypesForServiceCenters() {
+  const SQL = `
+        SELECT id, name
+        FROM business_types
+        WHERE business_category = $1
+        AND is_active = true
+        ORDER BY name ASC
+    `;
+
+  const result = await query(SQL, ["SERVICE_GARAGE"]);
+
   return result.rows;
 }
 
@@ -463,7 +477,59 @@ async function saveBusinessLocation(data) {
   return result.rows[0];
 }
 
+async function saveBusinessType(client, applicationId, businessType) {
+  const SQL = `
+        INSERT INTO vendor_application_business_types (
+            vendor_application_id,
+            business_type_id
+        )
+        VALUES ($1, $2)
+        ON CONFLICT (vendor_application_id, business_type_id)
+        DO NOTHING
+        RETURNING *
+    `;
+
+  const result = await client.query(SQL, [
+    applicationId,
+    businessType
+  ]);
+
+  return result.rows[0];
+}
+
+
+async function saveVendorApplicationsInsuranceCompanies(
+  client,
+  applicationId,
+  insuranceCompanies
+) {
+  const SQL = `
+        INSERT INTO vendor_application_insurance_companies (
+            application_id,
+            insurance_company_id
+        )
+        SELECT $1, unnest($2::uuid[])
+        RETURNING *
+    `;
+
+  const result = await client.query(SQL, [
+    applicationId,
+    insuranceCompanies
+  ]);
+
+  return result.rows;
+}
+
+async function getInsuranceCompanies() {
+  const SQL = "SELECT id, name FROM insurance_companies";
+  const result = await query(SQL);
+  return result.rows;
+}
+
 module.exports = {
+  saveVendorApplicationsInsuranceCompanies,
+  getInsuranceCompanies,
+  saveBusinessType,
   saveVendorApplicationBusinessTypes,
   getSparePartsVendorTypes: getBusinessTypesForSparePartsShop,
   saveBusinessLocation,
@@ -486,4 +552,5 @@ module.exports = {
   saveVendorApplicationVehicleCategories,
   saveVendorApplicationBrands,
   saveVendorApplicationPartsCategories,
+  getBusinessTypesForServiceCenters
 };

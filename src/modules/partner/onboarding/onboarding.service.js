@@ -194,6 +194,7 @@ async function saveGarageCapabilties(data) {
 
 async function fetchRepairCapabilties() {
   try {
+
     return await repository.fetchRepairCapabilities();
   } catch (e) {
     throw new AppError(e);
@@ -202,47 +203,40 @@ async function fetchRepairCapabilties() {
 
 async function getVehiclesAndExperienceFormFields() {
   try {
+
     const [vehicleTypes, vehicleBrands] = await Promise.all([
       repository.getVehicleCategories(),
       repository.getVehicleBrands(),
+
     ]);
 
     return { vehicleTypes, vehicleBrands };
+
   } catch (error) {
     throw new AppError(error);
   }
 }
 
-async function saveVehiclesAndInsuranceDetails(data) {
+async function saveStepSixDetailsServiceVendor(data) {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
 
-    const vehicleTypes =
-      await repository.saveVendorApplicationVehicleCategories(
-        client,
-        data.id,
-        data.vehicle_types,
-      );
-    const brands = await repository.saveVendorApplicationBrands(
-      client,
-      data.id,
-      data.brands_serviced,
-    );
+    const insuranceCompnaies = await repository.saveVendorApplicationsInsuranceCompanies(client, data.id, data.insurance_compnies)
+
     const insuranceDetails = await repository.saveVehiclesAndInsuranceDetails(
       client,
       data,
     );
 
-    insuranceDetails.vehicle_types = vehicleTypes;
-    insuranceDetails.brandServiced = brands;
+
 
     await client.query("COMMIT");
 
-    return insuranceDetails;
+    return { insuranceCompnaies, insuranceDetails };
   } catch (e) {
     await client.query("ROLLBACK");
-    throw AppError(e);
+    throw new AppError(e);
   } finally {
     client.release();
   }
@@ -327,7 +321,7 @@ async function saveApplicationDocuments(data) {
     const documents = data.documents;
 
 
-    console.log(documents);
+
 
 
 
@@ -368,14 +362,94 @@ async function saveBusinessLocation(data) {
   return application;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------------
+// STEP 4 - SERVICE VENDOR
+//----------------------------------------------------------------------------------------------------------------------------------------
+
+async function getStepFourFieldsServiceVendorOnboarding() {
+  try {
+
+    const [busiessTypes, vehicleCategories, vehicleBrands] = await Promise.all([
+      repository.getBusinessTypesForServiceCenters(),
+      repository.getVehicleCategories(),
+      repository.getVehicleBrands()
+    ]);
+
+    return {
+      busiessTypes, vehicleCategories, vehicleBrands
+    }
+
+  } catch (e) {
+    throw new AppError(e);
+  }
+}
+
+
+async function saveStepFourDetailsServiceVendor(data) {
+  const client = await pool.connect();
+  try {
+
+
+    await client.query("BEGIN");
+    const businessType = await repository.saveBusinessType(client, data.id, data.businessType);
+    const vehicleCategories = await repository.saveVendorApplicationVehicleCategories(client, data.id, data.vehicleCategories);
+    const vehicleBrands = await repository.saveVendorApplicationBrands(client, data.id, data.vehicleBrands);
+    await client.query("COMMIT");
+
+    return {
+      businessType, vehicleCategories, vehicleBrands
+    }
+
+  } catch (e) {
+    await client.query("ROLLBACK");
+    throw new AppError(e);
+  } finally {
+    client.release();
+  }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+// STEP 5 - SERVICE VENDOR
+//----------------------------------------------------------------------------------------------------------------------------------------
+
+async function getStepFiveFieldsServiceVendorOnboarding() {
+  try {
+
+    return await repository.fetchRepairCapabilities();
+
+  } catch (e) {
+    throw new AppError(e);
+  }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+// STEP 6 - SERVICE VENDOR
+//----------------------------------------------------------------------------------------------------------------------------------------
+
+async function getStepSixFieldsServiceVendorOnboarding() {
+  try {
+
+    return await repository.getInsuranceCompanies();
+
+  } catch (e) {
+    throw new AppError(e);
+  }
+}
+
+
 
 module.exports = {
+  getStepSixFieldsServiceVendorOnboarding,
+  getStepFiveFieldsServiceVendorOnboarding,
+  saveStepFourDetailsServiceVendor,
+  getStepFourFieldsServiceVendorOnboarding,
   saveBusinessLocation,
   saveApplicationDocuments,
   saveGarageAndShopImages,
   createApplicationDocumentsPresign,
   createLocationImagePresign,
-  saveVehiclesAndInsuranceDetails,
+  saveStepSixDetailsServiceVendor,
   getVehiclesAndExperienceFormFields,
   fetchRepairCapabilties,
   submitApplication,

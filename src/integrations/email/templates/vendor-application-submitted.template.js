@@ -1,3 +1,5 @@
+const env = require("../../../config/env");
+
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (character) => {
     const entities = {
@@ -25,6 +27,7 @@ function vendorApplicationSubmittedTemplate({
 }) {
   const displayVendorName = vendorName || "Partner";
   const subject = "We received your Kokki partner application";
+  const logoUrl = escapeHtml(env.assets.logo);
 
   const text = `
 Hi ${displayVendorName},
@@ -159,35 +162,19 @@ Kokki
                         border="0"
                       >
                         <tr>
-                          <td
-                            width="42"
-                            height="42"
-                            align="center"
-                            valign="middle"
-                            style="
-                              width: 42px;
-                              height: 42px;
-                              border-radius: 12px;
-                              background-color: #c8ff4d;
-                              color: #151714;
-                              font-size: 24px;
-                              font-weight: 800;
-                              line-height: 42px;
-                            "
-                          >
-                            K
-                          </td>
-                          <td
-                            valign="middle"
-                            style="
-                              padding-left: 12px;
-                              color: #ffffff;
-                              font-size: 22px;
-                              font-weight: 700;
-                              letter-spacing: -0.5px;
-                            "
-                          >
-                            kokki
+                          <td valign="middle">
+                            <img
+                              src="${logoUrl}"
+                              width="112"
+                              alt="Kokki"
+                              style="
+                                display: block;
+                                width: 112px;
+                                max-width: 112px;
+                                height: auto;
+                                border: 0;
+                              "
+                            />
                           </td>
                         </tr>
                       </table>
@@ -597,7 +584,7 @@ Kokki
     subject,
     text,
     html,
-    to: email
+    to: email,
   };
 }
 

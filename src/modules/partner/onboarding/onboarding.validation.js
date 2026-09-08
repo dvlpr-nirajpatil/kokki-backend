@@ -149,11 +149,7 @@ const submitApplication = z.object(
 
 
 
-
-
-
-
-const saveGarageCapabilities = z.object({
+const saveStepFiveServiceVendor = z.object({
     params: requestIdParams,
 
     body: z.object({
@@ -162,7 +158,7 @@ const saveGarageCapabilities = z.object({
             error: "service_pickup_radius_km is required"
         })
             .int()
-            .nonnegative(),
+            .nonnegative().optional(),
 
         provides_pickup_drop: z.boolean({
             error: "provides_pickup_drop is required"
@@ -221,15 +217,12 @@ const saveGarageCapabilities = z.object({
 
 
 
-const saveVehiclesAndInsuranceDetails = z.object({
+const saveStepSixDetails = z.object({
     params: requestIdParams,
 
     body: z.object({
-        vehicle_types: z.array(z.uuid()).min(1),
-        brands_serviced: z.array(z.uuid()).min(1),
-
+        insurance_compnies: z.array(z.uuid()),
         currently_handles_insurance_repairs: z.boolean(),
-
         no_of_insurance_repair_experience: z.number().optional(),
         insurance_vehicles_per_month: z.number().optional(),
         has_dedicated_insurance_coordinator: z.boolean().optional(),
@@ -358,16 +351,47 @@ const saveLocation = z.object({
     })
 });
 
+
+const saveStepFourDetailsServiceVendor = z.object({
+    params: requestIdParams,
+
+    body: z.object({
+        businessType: z.uuid(),
+
+        vehicleCategories: z
+            .array(z.uuid())
+            .min(1, "Select at least one vehicle category"),
+
+        vehicleBrands: z
+            .array(z.uuid())
+            .min(1, "Select at least one vehicle brand")
+    })
+});
+
+const saveStepFiveDetailsServiceVendor = z.object({
+    params: requestIdParams,
+
+    body: z.object({
+        capabilites: z.array(z.uuid())
+            .min(1, "Select at least one repair capability"),
+
+    })
+});
+
+
+
 module.exports = {
+    saveStepFiveServiceVendor,
+    saveStepFourDetailsServiceVendor,
     saveLocation,
     saveApplicationDocuments,
     saveShopOrGarageImages,
     presignAssets,
-    saveVehiclesAndInsuranceDetails,
+    saveStepSixDetails,
     submitApplication,
     createApplication,
     saveBusinessDetails,
     saveSparePartsProfile,
     saveBusinessHours,
-    saveGarageCapabilities
+
 }

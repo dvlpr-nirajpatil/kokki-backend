@@ -73,7 +73,6 @@ async function verifyUploadedObject({
 
 
 
-    console.log(objectKey);
 
     let object;
 
