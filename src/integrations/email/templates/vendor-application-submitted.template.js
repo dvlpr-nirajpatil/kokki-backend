@@ -21,7 +21,6 @@ function vendorApplicationSubmittedTemplate({
   applicationNumber,
   vendorType,
   submittedAt,
-  statusUrl,
   supportEmail,
   currentYear = new Date().getFullYear(),
 }) {
@@ -40,7 +39,7 @@ Submitted on: ${submittedAt}
 
 Our onboarding team will review the submitted business details, location, images, and documents. We may contact you or schedule a business visit during verification.
 
-View your application status: ${statusUrl}
+We will send all updates about your application to this email address: ${email}.
 
 If you have questions, contact ${supportEmail}.
 
@@ -62,7 +61,7 @@ Kokki
     <!--
       Suggested subject: We received your Kokki partner application
       Placeholders: vendorName, businessName, applicationNumber, vendorType,
-      submittedAt, statusUrl, supportEmail, currentYear
+      submittedAt, supportEmail, currentYear
     -->
     <style>
       @media only screen and (max-width: 620px) {
@@ -86,11 +85,6 @@ Kokki
           padding-top: 5px !important;
         }
 
-        .mobile-button {
-          display: block !important;
-          width: 100% !important;
-          box-sizing: border-box !important;
-        }
       }
     </style>
   </head>
@@ -165,16 +159,28 @@ Kokki
                           <td valign="middle">
                             <img
                               src="${logoUrl}"
-                              width="112"
-                              alt="Kokki"
+                              width="24"
+                              height="24"
+                              alt=""
                               style="
                                 display: block;
-                                width: 112px;
-                                max-width: 112px;
-                                height: auto;
+                                width: 24px;
+                                height: 24px;
                                 border: 0;
                               "
                             />
+                          </td>
+                          <td
+                            valign="middle"
+                            style="
+                              padding-left: 8px;
+                              color: #ffffff;
+                              font-size: 22px;
+                              font-weight: 700;
+                              letter-spacing: -0.5px;
+                            "
+                          >
+                            kokki
                           </td>
                         </tr>
                       </table>
@@ -488,39 +494,21 @@ Kokki
 
             <tr>
               <td class="email-padding" style="padding: 0 40px 40px">
-                <table
-                  role="presentation"
-                  cellspacing="0"
-                  cellpadding="0"
-                  border="0"
-                >
-                  <tr>
-                    <td
-                      align="center"
-                      style="border-radius: 999px; background-color: #151714"
-                    >
-                      <a
-                        class="mobile-button"
-                        href="${escapeHtml(statusUrl)}"
-                        target="_blank"
-                        style="
-                          display: inline-block;
-                          padding: 15px 24px;
-                          border-radius: 999px;
-                          color: #ffffff;
-                          font-size: 14px;
-                          font-weight: 700;
-                          text-decoration: none;
-                        "
-                      >
-                        View application status&nbsp;&nbsp;&rarr;
-                      </a>
-                    </td>
-                  </tr>
-                </table>
                 <p
                   style="
-                    margin: 22px 0 0;
+                    margin: 0 0 14px;
+                    color: #151714;
+                    font-size: 14px;
+                    line-height: 1.65;
+                  "
+                >
+                  We will send all updates about your application to this email
+                  address:
+                  <strong>${escapeHtml(email)}</strong>.
+                </p>
+                <p
+                  style="
+                    margin: 0;
                     color: #767c72;
                     font-size: 13px;
                     line-height: 1.65;

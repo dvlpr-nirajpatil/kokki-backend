@@ -160,7 +160,6 @@ async function submitApplication(id) {
       applicationNumber: application.application_no,
       vendorType: application.vendor_type == "SPARE_PARTS" ? "Spare Parts Vendorship" : "Service Vendorship",
       submittedAt: submittedAt,
-      statusUrl: `https://www.kokki.in/application/${application.id}/status`,
       supportEmail: "support@kokki.in",
     });
 
