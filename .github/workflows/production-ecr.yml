@@ -59,22 +59,19 @@ jobs:
         shell: bash
         run: |
           IMAGE="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:${GITHUB_SHA}"
+          --parameters commands="[
+            \"aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com\",
 
-          COMMAND_ID=$(aws ssm send-command \
-            --instance-ids "$EC2_INSTANCE_ID" \
-            --document-name "AWS-RunShellScript" \
-            --comment "Deploy Kokki production ${GITHUB_SHA}" \
-            --parameters commands="[
+            \"docker pull ${IMAGE}\",
 
-              \"aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com\",
+            \"PREVIOUS_IMAGE=\$(docker inspect --format='{{.Config.Image}}' kokki-production-backend 2>/dev/null || true); echo \\"\$PREVIOUS_IMAGE\\" > /tmp/kokki-previous-image; echo \\"Previous image: \$PREVIOUS_IMAGE\\"\",
 
-              \"docker pull ${IMAGE}\",
+            \"docker rm -f kokki-production-backend || true\",
 
-              \"docker rm -f kokki-production-backend || true\",
+            \"docker run -d --name kokki-production-backend --restart unless-stopped --env-file /opt/kokki/.env.production -v /opt/kokki/certs/rds-global-bundle.pem:/app/certs/rds-global-bundle.pem:ro -p 127.0.0.1:3000:3000 ${IMAGE}\",
 
-              \"docker run -d --name kokki-production-backend --restart unless-stopped --env-file /opt/kokki/.env.production -v /opt/kokki/certs/rds-global-bundle.pem:/app/certs/rds-global-bundle.pem:ro -p 127.0.0.1:3000:3000 ${IMAGE}\"
-
-            ]" \
+            \"HEALTHY=false; for i in \$(seq 1 12); do STATUS=\$(docker inspect --format='{{.State.Health.Status}}' kokki-production-backend 2>/dev/null || echo unavailable); echo \\"Health check \$i/12: \$STATUS\\"; if [ \\"\$STATUS\\" = \\"healthy\\" ]; then HEALTHY=true; break; fi; sleep 5; done; if [ \\"\$HEALTHY\\" != \\"true\\" ]; then echo 'New deployment failed health check. Starting rollback...'; docker logs --tail 100 kokki-production-backend || true; PREVIOUS_IMAGE=\$(cat /tmp/kokki-previous-image); docker rm -f kokki-production-backend || true; if [ -z \\"\$PREVIOUS_IMAGE\\" ]; then echo 'ERROR: No previous image available for rollback'; exit 1; fi; echo \\"Rolling back to \$PREVIOUS_IMAGE\\"; docker run -d --name kokki-production-backend --restart unless-stopped --env-file /opt/kokki/.env.production -v /opt/kokki/certs/rds-global-bundle.pem:/app/certs/rds-global-bundle.pem:ro -p 127.0.0.1:3000:3000 \\"\$PREVIOUS_IMAGE\\"; ROLLBACK_HEALTHY=false; for i in \$(seq 1 12); do STATUS=\$(docker inspect --format='{{.State.Health.Status}}' kokki-production-backend 2>/dev/null || echo unavailable); echo \\"Rollback health check \$i/12: \$STATUS\\"; if [ \\"\$STATUS\\" = \\"healthy\\" ]; then ROLLBACK_HEALTHY=true; break; fi; sleep 5; done; if [ \\"\$ROLLBACK_HEALTHY\\" = \\"true\\" ]; then echo 'Rollback successful. Previous production version restored.'; else echo 'CRITICAL: Rollback container is unhealthy'; docker logs --tail 100 kokki-production-backend || true; fi; exit 1; fi; echo 'Deployment health check passed.'\"
+          ]" \
             --query "Command.CommandId" \
             --output text)
 
