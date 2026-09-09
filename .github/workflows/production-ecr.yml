@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - rds-tls-test
 
   workflow_dispatch:
     inputs:
@@ -54,7 +55,7 @@ jobs:
             ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
 
       - name: Deploy to production EC2
-        if: github.event_name == 'push' || inputs.deploy == true
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.deploy == true)
         shell: bash
         run: |
           IMAGE="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:${GITHUB_SHA}"
