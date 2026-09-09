@@ -1,3 +1,4 @@
+const fs = require("fs");
 const { z } = require("zod");
 
 const optionalString = z.string().trim().min(1).optional();
@@ -28,6 +29,7 @@ const databaseEnvSchema = z
     DB_CONNECTION_TIMEOUT: z.coerce.number().int().positive().default(2000),
     DB_SSL: booleanString.default(false),
     DB_SSL_REJECT_UNAUTHORIZED: booleanString.default(true),
+    DB_SSL_CA_PATH: optionalString,
   })
   .superRefine((values, context) => {
     if (values.DATABASE_URL) return;
@@ -69,6 +71,7 @@ function parseDatabaseConfig(rawEnvironment) {
     connectionTimeout: values.DB_CONNECTION_TIMEOUT,
     ssl: values.DB_SSL,
     sslRejectUnauthorized: values.DB_SSL_REJECT_UNAUTHORIZED,
+    sslCaPath: values.DB_SSL_CA_PATH,
   };
 }
 
@@ -76,16 +79,24 @@ function createPgConnectionConfig(databaseConfig) {
   const connection = databaseConfig.connectionString
     ? { connectionString: databaseConfig.connectionString }
     : {
-        host: databaseConfig.host,
-        port: databaseConfig.port,
-        user: databaseConfig.user,
-        password: databaseConfig.password,
-        database: databaseConfig.database,
-      };
+      host: databaseConfig.host,
+      port: databaseConfig.port,
+      user: databaseConfig.user,
+      password: databaseConfig.password,
+      database: databaseConfig.database,
+    };
 
-  connection.ssl = databaseConfig.ssl
-    ? { rejectUnauthorized: databaseConfig.sslRejectUnauthorized }
-    : false;
+  if (databaseConfig.ssl) {
+    connection.ssl = {
+      rejectUnauthorized: databaseConfig.sslRejectUnauthorized,
+    };
+
+    if (databaseConfig.sslCaPath) {
+      connection.ssl.ca = fs.readFileSync(databaseConfig.sslCaPath, "utf8");
+    }
+  } else {
+    connection.ssl = false;
+  }
 
   return connection;
 }

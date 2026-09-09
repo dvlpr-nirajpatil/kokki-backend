@@ -58,7 +58,7 @@ jobs:
               \"aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com\",
               \"docker pull ${IMAGE}\",
               \"docker rm -f kokki-production-backend || true\",
-              \"docker run -d --name kokki-production-backend --restart unless-stopped --env-file /opt/kokki/.env.production -p 127.0.0.1:3000:3000 ${IMAGE}\"
+              \"docker run -d --name kokki-production-backend --restart unless-stopped --env-file /opt/kokki/.env.production -v /opt/kokki/certs/rds-global-bundle.pem:/app/certs/rds-global-bundle.pem:ro -p 127.0.0.1:3000:3000 ${IMAGE}\"
             ]" \
             --query "Command.CommandId" \
             --output text)
