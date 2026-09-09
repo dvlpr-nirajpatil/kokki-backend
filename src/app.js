@@ -26,7 +26,14 @@ app.use(requestLogger);
 app.use("/api/v1", require("./router/v1.router"));
 
 app.get("/health", (req, res) => {
-  return response.success(res, 200, "Server is Healthy");
+
+  res.status(200).json({
+    success: true,
+    status: "healthy",
+    service: "KOKKI",
+    timestamp: new Date().toISOString(),
+  });
+
 });
 
 app.use(errorHandler);
