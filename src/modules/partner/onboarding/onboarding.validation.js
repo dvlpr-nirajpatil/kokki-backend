@@ -61,7 +61,7 @@ const saveBusinessDetails = z.object({
 
         gstin: requiredString("gstin")
             .trim()
-            .length(15, "GSTIN must be 15 characters"),
+            .length(15, "GSTIN must be 15 characters").optional(),
 
         legal_name: requiredString("legal_name")
             .trim(),
@@ -73,7 +73,7 @@ const saveBusinessDetails = z.object({
             .trim(),
 
         gst_status: requiredString("gst_status")
-            .trim(),
+            .trim().optional(),
 
         address: requiredString("address")
             .trim(),
