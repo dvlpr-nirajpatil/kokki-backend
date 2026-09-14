@@ -1,6 +1,7 @@
 const { response } = require("../../../core/index");
 const service = require("./onboarding.service");
-const jwt = require("../../../utils/jwt");
+const env = require("../../../config/env");
+const jwt = require("jsonwebtoken")
 
 
 
@@ -19,7 +20,7 @@ module.exports.createVendorApplication = async (req, res) => {
       id: application.id
     }
 
-    const accessToken = await jwt.getAccessToken(payload);
+    const accessToken = jwt.sign(payload, env.jwt.accessSecret);
 
     return response.success(
       res,
