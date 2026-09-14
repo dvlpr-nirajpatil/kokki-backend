@@ -9,6 +9,7 @@ const {
   vendorApplicationSubmittedTemplate,
 } = require("../../../integrations/email/templates/vendor-application-submitted.template");
 
+const vehicleRepository = require("../../masterData/vehicles/vehicles.repository");
 
 async function createApplication(data) {
   const client = await pool.connect();
@@ -221,18 +222,16 @@ async function saveStepSixDetailsServiceVendor(data) {
   try {
     await client.query("BEGIN");
 
-    const insuranceCompnaies = await repository.saveVendorApplicationsInsuranceCompanies(client, data.id, data.insurance_compnies)
-
+    const insuranceCompnaies = await repository.saveVendorApplicationsInsuranceCompanies(client, data.id, data.insurance_compnies);
+    const cashlessTieups = await repository.saveVendorApplicationCashlessInsuranceTieups(client, data.id, data.cashless_insurance_tieups);
     const insuranceDetails = await repository.saveVehiclesAndInsuranceDetails(
       client,
-      data,
+      data
     );
-
-
 
     await client.query("COMMIT");
 
-    return { insuranceCompnaies, insuranceDetails };
+    return { insuranceCompnaies, insuranceDetails, cashlessTieups };
   } catch (e) {
     await client.query("ROLLBACK");
     throw new AppError(e);
@@ -371,7 +370,7 @@ async function getStepFourFieldsServiceVendorOnboarding() {
     const [busiessTypes, vehicleCategories, vehicleBrands] = await Promise.all([
       repository.getBusinessTypesForServiceCenters(),
       repository.getVehicleCategories(),
-      repository.getVehicleBrands()
+      vehicleRepository.getVehicleMakes()
     ]);
 
     return {

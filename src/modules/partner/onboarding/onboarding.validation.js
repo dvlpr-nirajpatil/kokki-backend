@@ -222,6 +222,7 @@ const saveStepSixDetails = z.object({
 
     body: z.object({
         insurance_compnies: z.array(z.uuid()),
+        cashless_insurance_tieups: z.array(z.uuid()),
         currently_handles_insurance_repairs: z.boolean(),
         no_of_insurance_repair_experience: z.number().optional(),
         insurance_vehicles_per_month: z.number().optional(),

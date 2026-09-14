@@ -8,5 +8,6 @@ router.use("/estimate-requests", require("../modules/estimatesRequests"));
 router.use("/uploads", require("../modules/uploads"));
 router.use("/verification", require("../modules/verification"));
 router.use("/email", require("../integrations/email"));
+router.use("/master", require("../modules/masterData"));
 
 module.exports = router;
