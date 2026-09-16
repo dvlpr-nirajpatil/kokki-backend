@@ -1,24 +1,21 @@
-FROM node:22-alpine
+# FROM node:22-alpine
 
-WORKDIR /app
+# WORKDIR /app
 
-COPY package*.json ./
+# COPY package*.json ./
 
-RUN npm ci
+# RUN npm ci
 
-COPY . .
+# COPY . .
 
-ENV NODE_ENV=production
+# ENV NODE_ENV=production
 
-EXPOSE 3000
+# EXPOSE 3000
 
-<<<<<<< Updated upstream
-CMD ["npm", "run", "start:production"]
-=======
-HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-    CMD node -e "fetch('http://127.0.0.1:3000/health').then(r => { if (!r.ok) process.exit(1) }).catch(() => process.exit(1))"
+# HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+#     CMD node -e "fetch('http://127.0.0.1:3000/health').then(r => { if (!r.ok) process.exit(1) }).catch(() => process.exit(1))"
 
-CMD ["npm", "start"]
+# CMD ["npm", "start"]
 
 
 
@@ -161,4 +158,3 @@ USER appuser
 #   "start": "node server.js"
 # }
 CMD ["npm", "start"]
->>>>>>> Stashed changes
