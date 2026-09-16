@@ -38,7 +38,6 @@ exports.up = async function (knex) {
 
         table.index("estimate_request_id");
 
-        // One RC and one insurance policy per request
         table.unique([
             "estimate_request_id",
             "document_type"

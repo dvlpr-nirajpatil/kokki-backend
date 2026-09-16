@@ -149,38 +149,49 @@ async function submitEstimateRequest(estimateRequestId, userId) {
 }
 
 async function saveRequestDocuments(estimateRequestId, documents) {
+
+  await query(
+    `
+      DELETE FROM estimate_request_documents
+      WHERE estimate_request_id = $1
+    `,
+    [estimateRequestId]
+  );
+
   const SQL = `
-        INSERT INTO estimate_request_documents (
-            estimate_request_id,
-            document_type,
-            object_key,
-            "order"
-        )
-        SELECT
-            $1,
-            input.document_type::estimate_request_document_type,
-            input.object_key,
-            input.document_order
-        FROM jsonb_to_recordset($2::jsonb) AS input (
-            document_type text,
-            object_key text,
-            document_order integer
-        )
-        ON CONFLICT (estimate_request_id, document_type)
-        DO UPDATE SET
-            object_key = EXCLUDED.object_key,
-            "order" = EXCLUDED."order",
-            updated_at = CURRENT_TIMESTAMP
-        RETURNING *
-    `;
+    INSERT INTO estimate_request_documents (
+      estimate_request_id,
+      document_type,
+      object_key,
+      "order"
+    )
+    SELECT
+      $1,
+      input.document_type::estimate_request_document_type,
+      input.object_key,
+      input.document_order
+    FROM jsonb_to_recordset($2::jsonb) AS input (
+      document_type text,
+      object_key text,
+      document_order integer
+    )
+    RETURNING *
+  `;
+
   const input = documents.map((document) => ({
     document_type: document.document_type,
     object_key: document.object_key,
     document_order: document.order,
   }));
-  const result = await query(SQL, [estimateRequestId, JSON.stringify(input)]);
 
-  return result.rows.sort((first, second) => first.order - second.order);
+  const result = await query(SQL, [
+    estimateRequestId,
+    JSON.stringify(input)
+  ]);
+
+  return result.rows.sort(
+    (first, second) => first.order - second.order
+  );
 }
 
 async function getUserById(userId) {

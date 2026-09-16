@@ -77,13 +77,18 @@ const estimateDocumentSchema = z
 
 const completeEstimateDocumentsSchema = z.object({
   params: requestIdParams,
+
   body: z
     .array(estimateDocumentSchema)
     .min(1)
-    .max(2)
+    .max(10)
     .superRefine((documents, context) => {
-      const documentTypes = documents.map((document) => document.document_type);
 
+      const documentTypes = documents.map(
+        (document) => document.document_type
+      );
+
+      // RC Book is mandatory
       if (!documentTypes.includes("RC_BOOK")) {
         context.addIssue({
           code: "custom",
@@ -91,16 +96,11 @@ const completeEstimateDocumentsSchema = z.object({
         });
       }
 
-      const uniqueTypes = new Set(documentTypes);
+      // Every uploaded document should have unique order
+      const orders = documents.map(
+        (document) => document.order
+      );
 
-      if (uniqueTypes.size !== documentTypes.length) {
-        context.addIssue({
-          code: "custom",
-          message: "Each document type can only be submitted once",
-        });
-      }
-
-      const orders = documents.map((document) => document.order);
       if (new Set(orders).size !== orders.length) {
         context.addIssue({
           code: "custom",
@@ -108,7 +108,11 @@ const completeEstimateDocumentsSchema = z.object({
         });
       }
 
-      const objectKeys = documents.map((document) => document.object_key);
+      // Same S3 object cannot be submitted twice
+      const objectKeys = documents.map(
+        (document) => document.object_key
+      );
+
       if (new Set(objectKeys).size !== objectKeys.length) {
         context.addIssue({
           code: "custom",
