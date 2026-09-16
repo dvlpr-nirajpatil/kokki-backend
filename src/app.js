@@ -1,12 +1,15 @@
 const express = require("express");
 const cors = require("cors");
 const { requestLogger, errorHandler } = require("./middlewares");
-const { response } = require("./core");
+const { response, logger } = require("./core");
 const helmet = require("helmet");
 const compression = require("compression");
 const corsOptions = require("./config/cors");
 
+
 const app = express();
+
+app.set("trust proxy", 1);
 
 app.use(helmet());
 
@@ -35,6 +38,10 @@ app.get("/health", (req, res) => {
   });
 
 });
+
+app.use("/", (req, res) => {
+  return response.success(res, 200, "Welcome to Kokki UAT Backend")
+})
 
 app.use(errorHandler);
 

@@ -520,6 +520,38 @@ async function saveVendorApplicationsInsuranceCompanies(
   return result.rows;
 }
 
+async function saveVendorApplicationCashlessInsuranceTieups(
+  client,
+  applicationId,
+  insuranceCompanies
+) {
+  await client.query(
+    `DELETE FROM vendor_application_cashless_insurance_tieups
+         WHERE application_id = $1`,
+    [applicationId]
+  );
+
+  if (!insuranceCompanies?.length) {
+    return [];
+  }
+
+  const SQL = `
+        INSERT INTO vendor_application_cashless_insurance_tieups (
+            application_id,
+            insurance_company_id
+        )
+        SELECT $1, unnest($2::uuid[])
+        RETURNING *
+    `;
+
+  const result = await client.query(SQL, [
+    applicationId,
+    insuranceCompanies
+  ]);
+
+  return result.rows;
+}
+
 async function getInsuranceCompanies() {
   const SQL = "SELECT id, name FROM insurance_companies";
   const result = await query(SQL);
@@ -527,6 +559,7 @@ async function getInsuranceCompanies() {
 }
 
 module.exports = {
+  saveVendorApplicationCashlessInsuranceTieups,
   saveVendorApplicationsInsuranceCompanies,
   getInsuranceCompanies,
   saveBusinessType,

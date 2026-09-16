@@ -61,7 +61,7 @@ const saveBusinessDetails = z.object({
 
         gstin: requiredString("gstin")
             .trim()
-            .length(15, "GSTIN must be 15 characters"),
+            .length(15, "GSTIN must be 15 characters").optional(),
 
         legal_name: requiredString("legal_name")
             .trim(),
@@ -73,7 +73,7 @@ const saveBusinessDetails = z.object({
             .trim(),
 
         gst_status: requiredString("gst_status")
-            .trim(),
+            .trim().optional(),
 
         address: requiredString("address")
             .trim(),
@@ -221,7 +221,8 @@ const saveStepSixDetails = z.object({
     params: requestIdParams,
 
     body: z.object({
-        insurance_compnies: z.array(z.uuid()),
+
+        cashless_insurance_tieups: z.array(z.uuid()),
         currently_handles_insurance_repairs: z.boolean(),
         no_of_insurance_repair_experience: z.number().optional(),
         insurance_vehicles_per_month: z.number().optional(),
