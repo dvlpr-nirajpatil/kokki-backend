@@ -520,7 +520,20 @@ async function saveVendorApplicationsInsuranceCompanies(
   return result.rows;
 }
 
-async function saveVendorApplicationCashlessInsuranceTieups(client, applicationId, insuranceCompanies) {
+async function saveVendorApplicationCashlessInsuranceTieups(
+  client,
+  applicationId,
+  insuranceCompanies
+) {
+  await client.query(
+    `DELETE FROM vendor_application_cashless_insurance_tieups
+         WHERE application_id = $1`,
+    [applicationId]
+  );
+
+  if (!insuranceCompanies?.length) {
+    return [];
+  }
 
   const SQL = `
         INSERT INTO vendor_application_cashless_insurance_tieups (

@@ -222,7 +222,7 @@ async function saveStepSixDetailsServiceVendor(data) {
   try {
     await client.query("BEGIN");
 
-    const insuranceCompnaies = await repository.saveVendorApplicationsInsuranceCompanies(client, data.id, data.insurance_compnies);
+
     const cashlessTieups = await repository.saveVendorApplicationCashlessInsuranceTieups(client, data.id, data.cashless_insurance_tieups);
     const insuranceDetails = await repository.saveVehiclesAndInsuranceDetails(
       client,
@@ -231,7 +231,7 @@ async function saveStepSixDetailsServiceVendor(data) {
 
     await client.query("COMMIT");
 
-    return { insuranceCompnaies, insuranceDetails, cashlessTieups };
+    return { insuranceDetails, cashlessTieups };
   } catch (e) {
     await client.query("ROLLBACK");
     throw new AppError(e);
