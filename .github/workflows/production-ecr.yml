@@ -1,9 +1,18 @@
-name: Build and Push Production Image
+name: Build and Deploy Production
 
 on:
   push:
     branches:
       - main
+
+
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Deploy image to production EC2"
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   id-token: write
@@ -13,10 +22,11 @@ env:
   AWS_REGION: ap-south-1
   ECR_REPOSITORY: kokki-production-backend
   AWS_ACCOUNT_ID: "841627029654"
+  EC2_INSTANCE_ID: i-065101e6d2e436ed3
 
 jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
+  build-and-deploy:
+    runs-on: ubuntu-24.04-arm
 
     steps:
       - name: Checkout repository

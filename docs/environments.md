@@ -1,18 +1,18 @@
 # Environment setup
 
-The API has three configuration files. Each command loads one file directly:
+Development and UAT each use a required environment file. Production primarily
+uses variables injected into `process.env` and may use `.env` as an optional
+fallback:
 
-| Environment | Configuration file | Start command              | Migration command             |
-| ----------- | ------------------ | -------------------------- | ----------------------------- |
-| Development | `.env.development` | `npm run dev`              | `npm run migrate:development` |
-| UAT         | `.env.uat`         | `npm run start:uat`        | `npm run migrate:uat`         |
-| Production  | `.env.production`  | `npm run start:production` | `npm run migrate:production`  |
+| Environment | Configuration source                | Start command              | Migration command             |
+| ----------- | ----------------------------------- | -------------------------- | ----------------------------- |
+| Development | Required `.env.development`         | `npm run dev`              | `npm run migrate:development` |
+| UAT         | Required `.env.uat`                 | `npm run start:uat`        | `npm run migrate:uat`         |
+| Production  | Injected variables; optional `.env` | `npm run start:production` | `npm run migrate:production`  |
 
-The files do not contain `NODE_ENV` or another environment selector. The npm
-command selects the environment with the `--env` argument, and the application
-loads only that environment's file. There are no `.env` or `.local` fallbacks.
-When no `--env` argument is present, the application does not load any file and
-uses the values already available in `process.env`.
+The files do not need to contain `NODE_ENV`; the npm command selects the runtime
+environment. In production, existing system or Docker variables take precedence
+over values in `.env`. A missing production `.env` is valid.
 
 ## Create the files
 
@@ -21,18 +21,23 @@ Copy each committed template once, then replace every placeholder:
 ```sh
 cp .env.development.example .env.development
 cp .env.uat.example .env.uat
-cp .env.production.example .env.production
 ```
 
-The three working files are ignored by Git because they contain secrets. The
-`.example` templates are safe to commit and should be updated when a new
+For a local production-style run, create the optional fallback with:
+
+```sh
+cp .env.production.example .env
+```
+
+All working environment files are ignored by Git because they contain secrets.
+The `.example` templates are safe to commit and should be updated when a new
 configuration key is added.
 
 Tests use `.env.development` and keep Jest's internal `test` runtime mode.
 
 ## Vercel deployment
 
-Do not upload or create `.env.*` files on Vercel. Add every configuration key
+Do not upload or create environment files on Vercel. Add every configuration key
 and value under Project Settings → Environment Variables; do not create one
 multiline variable named `.env`. Vercel injects those values directly into the
 application, so the file loader is skipped during builds and function execution.

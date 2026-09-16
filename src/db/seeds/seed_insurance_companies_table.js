@@ -4,6 +4,8 @@
  */
 exports.seed = async function (knex) {
 
+  await knex("insurance_companies").del();
+
   await knex("insurance_companies").insert([
     {
       name: "Acko General Insurance Limited",

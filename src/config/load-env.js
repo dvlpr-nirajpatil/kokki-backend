@@ -4,7 +4,7 @@ const dotenv = require("dotenv");
 const ENVIRONMENT_FILES = Object.freeze({
   development: ".env.development",
   uat: ".env.uat",
-  production: ".env.production",
+  production: ".env",
 });
 
 const VALID_ENVIRONMENTS = Object.freeze(Object.keys(ENVIRONMENT_FILES));
@@ -61,40 +61,44 @@ function getVercelEnvironment(rawEnvironment = process.env) {
 function loadEnvironment(requestedEnvironment) {
   const cliEnvironment = getCliEnvironment();
   const vercelEnvironment = getVercelEnvironment();
-  const fileEnvironment = requestedEnvironment || cliEnvironment;
+  const environment =
+    requestedEnvironment ||
+    cliEnvironment ||
+    vercelEnvironment ||
+    process.env.NODE_ENV ||
+    "development";
 
-  if (!fileEnvironment) {
-    const environment =
-      vercelEnvironment || process.env.NODE_ENV || "development";
-
-    if (environment !== "test" && !VALID_ENVIRONMENTS.includes(environment)) {
-      throw new Error(
-        `Environment must be one of: ${VALID_ENVIRONMENTS.join(", ")}`,
-      );
-    }
-
+  if (environment === "test") {
     process.env.NODE_ENV = environment;
     return environment;
   }
 
-  if (!VALID_ENVIRONMENTS.includes(fileEnvironment)) {
+  if (!VALID_ENVIRONMENTS.includes(environment)) {
     throw new Error(
       `Environment must be one of: ${VALID_ENVIRONMENTS.join(", ")}`,
     );
   }
 
+  // Vercel injects configuration directly into process.env.
+  if (!requestedEnvironment && !cliEnvironment && vercelEnvironment) {
+    process.env.NODE_ENV = environment;
+    return environment;
+  }
+
   const projectRoot = path.resolve(__dirname, "../..");
   const environmentFile = path.join(
     projectRoot,
-    ENVIRONMENT_FILES[fileEnvironment],
+    ENVIRONMENT_FILES[environment],
   );
+  const isProduction = environment === "production";
   const result = dotenv.config({
     path: environmentFile,
-    override: true,
+    // Docker/system-injected production values take precedence over .env.
+    override: !isProduction,
     quiet: true,
   });
 
-  if (result.error) {
+  if (result.error && !(isProduction && result.error.code === "ENOENT")) {
     throw new Error(
       `Could not load ${path.basename(environmentFile)}. Create it from the matching example file.`,
       { cause: result.error },
@@ -102,9 +106,9 @@ function loadEnvironment(requestedEnvironment) {
   }
 
   // The command controls the runtime mode; values inside the file cannot.
-  process.env.NODE_ENV = fileEnvironment;
+  process.env.NODE_ENV = environment;
 
-  return fileEnvironment;
+  return environment;
 }
 
 module.exports = {
