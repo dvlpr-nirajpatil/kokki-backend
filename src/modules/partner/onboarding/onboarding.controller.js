@@ -17,7 +17,8 @@ module.exports.createVendorApplication = async (req, res) => {
     const application = await service.createApplication(data);
 
     const payload = {
-      id: application.id
+      sub: application.id,
+      type: "access"
     }
 
     const accessToken = jwt.sign(payload, env.jwt.accessSecret);

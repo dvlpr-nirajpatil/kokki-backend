@@ -4,10 +4,13 @@ const { pool, query } = require("../../../config/db");
 const crypto = require("crypto");
 const s3Presign = require("../../../integrations/s3/presign.service");
 const env = require("../../../config/env");
-const { sendEmail } = require("../../../integrations/email/email.service");
+const { sendEmail, sendEmailToAdmins } = require("../../../integrations/email/email.service");
 const {
   vendorApplicationSubmittedTemplate,
 } = require("../../../integrations/email/templates/vendor-application-submitted.template");
+const {
+  vendorApplicationAdminNotificationTemplate,
+} = require("../../../integrations/email/templates/vendor-application-admin-notification.template");
 
 const vehicleRepository = require("../../masterData/vehicles/vehicles.repository");
 
@@ -144,6 +147,10 @@ async function submitApplication(id) {
   try {
     const application = await repository.submitApplication(id);
 
+    if (!application) {
+      throw new AppError("Vendor application not found", 404);
+    }
+
     const submittedAt = new Intl.DateTimeFormat("en-IN", {
       timeZone: "Asia/Kolkata",
       day: "numeric",
@@ -154,21 +161,49 @@ async function submitApplication(id) {
       hour12: true
     }).format(new Date(application.submitted_at));
 
-    const email = vendorApplicationSubmittedTemplate({
+    const vendorEmail = vendorApplicationSubmittedTemplate({
       email: application.email,
       vendorName: application.name,
       businessName: application.trade_name,
       applicationNumber: application.application_no,
-      vendorType: application.vendor_type == "SPARE_PARTS" ? "Spare Parts Vendorship" : "Service Vendorship",
+      vendorType:
+        application.vendor_type === "SPARE_PARTS"
+          ? "Spare Parts Vendorship"
+          : "Service Vendorship",
       submittedAt: submittedAt,
       supportEmail: "support@kokki.in",
     });
 
-    await sendEmail(email);
+    const adminEmail = vendorApplicationAdminNotificationTemplate({
+      vendorName: application.name,
+      businessName: application.trade_name,
+      applicationNumber: application.application_no,
+      vendorType:
+        application.vendor_type === "SPARE_PARTS"
+          ? "Spare Parts Vendorship"
+          : "Service Vendorship",
+      email: application.email,
+      phone: application.phone,
+      city: application.city,
+      state: application.state,
+      submittedAt,
+    });
+
+    const emailNotifications = [sendEmailToAdmins(adminEmail)];
+
+    if (application.email) {
+      emailNotifications.push(sendEmail(vendorEmail));
+    }
+
+    await Promise.all(emailNotifications);
+
 
     return application;
   } catch (e) {
-    throw new AppError(e);
+    if (e instanceof AppError) {
+      throw e;
+    }
+    throw new AppError(e.message);
   }
 }
 

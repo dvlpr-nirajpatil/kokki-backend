@@ -1,5 +1,4 @@
 
-
 const jwt = require("jsonwebtoken");
 const env = require("../../src/config/env");
 
@@ -12,7 +11,10 @@ function getRefreshToken(payload) {
 }
 
 
+function validateRefreshToken(refreshToken) {
+    return jwt.verify(refreshToken, env.jwt.refreshSecret);
+}
 
 module.exports = {
-    getAccessToken, getRefreshToken
+    getAccessToken, getRefreshToken, validateRefreshToken
 }

@@ -84,8 +84,8 @@ async function createEstimateRequestStep1(
     await client.query("COMMIT");
 
     const jwtPayload = {
-      id: user.id,
-      request_id: request.id,
+      sub: user.id,
+      type: "access"
     };
     const accessToken = jwt.sign(jwtPayload, env.jwt.accessSecret, {
       expiresIn: "60m",
