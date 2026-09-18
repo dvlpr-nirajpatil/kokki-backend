@@ -1,0 +1,1640 @@
+{
+  "info": {
+    "_postman_id": "5fe94dae-89af-4bcb-af23-0dcbaea3444e",
+    "name": "Kokki",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "34925659",
+    "_collection_link": "https://go.postman.co/collection/34925659-5fe94dae-89af-4bcb-af23-0dcbaea3444e?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Auth",
+          "item": [
+            {
+              "name": "sign-up",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\":\"Prashant Patil\",\n    \"email\":\"prashant.patil@kokki.in\",\n    \"password\":\"Probity@2022\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/admin/auth/sign-up",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "auth",
+                    "sign-up"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "sign-in",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"email\":\"aditya.aher@kokki.in\",\n    \"password\":\"Probity@2022\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/admin/auth/sign-in",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "auth",
+                    "sign-in"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Estimate Requests",
+          "item": [
+            {
+              "name": "Get Estimate Requests",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Returns lightweight estimate requests\", () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.data).to.be.an(\"array\");",
+                      "  json.data.forEach((request) => {",
+                      "    pm.expect(request).not.to.have.property(\"images\");",
+                      "    pm.expect(request).not.to.have.property(\"documents\");",
+                      "  });",
+                      "  if (json.data.length > 0) pm.collectionVariables.set(\"estimateRequestId\", json.data[0].id);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{host}}/admin/estimate-requests"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Estimate Request Details",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Returns images and documents\", () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.data.id).to.eql(pm.collectionVariables.get(\"estimateRequestId\"));",
+                      "  pm.expect(json.data.images).to.be.an(\"array\");",
+                      "  pm.expect(json.data.documents).to.be.an(\"array\");",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{host}}/admin/estimate-requests/{{estimateRequestId}}"
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "vendor applications",
+          "item": [
+            {
+              "name": "get vendor applications",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{host}}/admin/vendor-applications",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "vendor-applications"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get vendor application by id",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{host}}/admin/vendor-applications/8c4601d4-d596-4806-be48-6cf546305aa2",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "vendor-applications",
+                    "8c4601d4-d596-4806-be48-6cf546305aa2"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "users",
+          "item": [
+            {
+              "name": "get users",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{host}}/admin/users?page=1",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Roles",
+          "description": "Run requests from top to bottom. Create Role stores roleId, and Get Users For Role Tests stores userId.",
+          "item": [
+            {
+              "name": "Get Roles",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Returns a roles array\", () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.success).to.eql(true);",
+                      "  pm.expect(json.data.roles).to.be.an(\"array\");",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{host}}/admin/roles?page=1&limit=10&search=&isActive=true"
+              },
+              "response": []
+            },
+            {
+              "name": "Create Role",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const suffix = Date.now().toString().slice(-8);",
+                      "pm.collectionVariables.set(\"testRoleCode\", `POSTMAN_ROLE_${suffix}`);",
+                      "pm.collectionVariables.set(\"testRolePrefix\", `P${suffix.slice(-5)}`);"
+                    ]
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
+                      "pm.test(\"Role is created and captured\", () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.success).to.eql(true);",
+                      "  pm.expect(json.data.id).to.be.a(\"string\");",
+                      "  pm.collectionVariables.set(\"roleId\", json.data.id);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Postman Claims Manager\",\n  \"code\": \"{{testRoleCode}}\",\n  \"description\": \"Temporary role created by the Postman collection\",\n  \"prefix\": \"{{testRolePrefix}}\",\n  \"isSystem\": false,\n  \"isActive\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": "{{host}}/admin/roles"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Role By ID",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Returns the requested role\", () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.data.id).to.eql(pm.collectionVariables.get(\"roleId\"));",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{host}}/admin/roles/{{roleId}}"
+              },
+              "response": []
+            },
+            {
+              "name": "Update Role",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Role is updated\", () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.data.name).to.eql(\"Postman Senior Claims Manager\");",
+                      "  pm.expect(json.data.is_active).to.eql(true);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Postman Senior Claims Manager\",\n  \"description\": \"Updated from the Postman role API tests\",\n  \"isActive\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": "{{host}}/admin/roles/{{roleId}}"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Users Assigned To Role",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Returns a users array\", () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.data.users).to.be.an(\"array\");",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": "{{host}}/admin/roles/{{roleId}}/users?page=1&limit=10"
+              },
+              "response": []
+            },
+            {
+              "name": "User Role Assignments",
+              "item": [
+                {
+                  "name": "Get Users For Role Tests",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                          "pm.test(\"A test user is available and captured\", () => {",
+                          "  const json = pm.response.json();",
+                          "  pm.expect(json.data.users).to.be.an(\"array\").that.is.not.empty;",
+                          "  pm.collectionVariables.set(\"userId\", json.data.users[0].id);",
+                          "});"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": "{{host}}/admin/users?page=1&limit=10"
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get User Roles",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                          "pm.test(\"Returns a roles array\", () => {",
+                          "  const json = pm.response.json();",
+                          "  pm.expect(json.data.roles).to.be.an(\"array\");",
+                          "  pm.collectionVariables.set(\"originalRoleIds\", JSON.stringify(json.data.roles.map((role) => role.id)));",
+                          "});"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": "{{host}}/admin/users/{{userId}}/roles"
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Assign Role To User",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"Status code is 201\", () => pm.response.to.have.status(201));",
+                          "pm.test(\"Assigned role is returned\", () => {",
+                          "  const json = pm.response.json();",
+                          "  pm.expect(json.data.roles.some((role) => role.id === pm.collectionVariables.get(\"roleId\"))).to.eql(true);",
+                          "});"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"roleId\": \"{{roleId}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": "{{host}}/admin/users/{{userId}}/roles"
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Replace User Roles",
+                  "description": "Preserves the selected user's existing roles and adds the temporary Postman role through the bulk replacement endpoint.",
+                  "event": [
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "const originalRoleIds = JSON.parse(pm.collectionVariables.get(\"originalRoleIds\") || \"[]\");",
+                          "const roleId = pm.collectionVariables.get(\"roleId\");",
+                          "const replacementRoleIds = [...new Set([...originalRoleIds, roleId])];",
+                          "pm.variables.set(\"replacementRoleIds\", JSON.stringify(replacementRoleIds));"
+                        ]
+                      }
+                    },
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                          "pm.test(\"User roles are replaced\", () => {",
+                          "  const json = pm.response.json();",
+                          "  pm.expect(json.data.roles.some((role) => role.id === pm.collectionVariables.get(\"roleId\"))).to.eql(true);",
+                          "});"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"roleIds\": {{replacementRoleIds}}\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": "{{host}}/admin/users/{{userId}}/roles"
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Remove Role From User",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "type": "text/javascript",
+                        "exec": [
+                          "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                          "pm.test(\"Role is removed from user\", () => {",
+                          "  const json = pm.response.json();",
+                          "  pm.expect(json.data.roles.some((role) => role.id === pm.collectionVariables.get(\"roleId\"))).to.eql(false);",
+                          "});"
+                        ]
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "DELETE",
+                    "header": [],
+                    "url": "{{host}}/admin/users/{{userId}}/roles/{{roleId}}"
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Delete Role",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status code is 200\", () => pm.response.to.have.status(200));",
+                      "pm.test(\"Role is deleted\", () => {",
+                      "  const json = pm.response.json();",
+                      "  pm.expect(json.data.id).to.eql(pm.collectionVariables.get(\"roleId\"));",
+                      "  pm.collectionVariables.unset(\"roleId\");",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": "{{host}}/admin/roles/{{roleId}}"
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Integrations",
+      "item": [
+        {
+          "name": "GST",
+          "item": [
+            {
+              "name": "validate GST",
+              "request": {
+                "method": "GET",
+                "header": []
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "uploads",
+      "item": [
+        {
+          "name": "upload files",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "files",
+                  "type": "file",
+                  "uuid": "b748016a-d7f1-4dcd-8ef9-1e9b6a522412",
+                  "value": null
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{host}}/uploads/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "uploads",
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete files",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"key\":\"uploads/images/2026/08/ffb7f3b9-beab-4816-a54b-20af3f03beb9.webp\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/uploads/",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "uploads",
+                ""
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "partners",
+      "item": [
+        {
+          "name": "onboarding-application",
+          "item": [
+            {
+              "name": "garage",
+              "item": [
+                {
+                  "name": "save step 4",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"service_pickup_radius_km\": 15,\n    \"provides_pickup_drop\": true,\n    \"repair_capabilities\": [\n        \"4d8d9a12-f714-46ae-ac45-cb61582c3064\",\n        \"1f6e4970-6822-4c7b-8b87-79d76ecd70d1\",\n        \"42a702ad-4a9d-44df-ba6f-c3fe059f50c8\"\n\n    ],\n    \"no_of_service_bays\": 5,\n    \"no_of_technicians\": 8,\n    \"no_of_denting_technicians\": 2,\n    \"no_of_painters\": 2,\n    \"paint_booth_available\": true,\n    \"vehicle_lift_available\": true,\n    \"diagnostic_scanner_available\": true,\n    \"wheel_alignment_machine_available\": false,\n    \"dedicated_accident_repair_area_available\": true\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/partner/onboarding/garage/:id/capabilities",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "partner",
+                        "onboarding",
+                        "garage",
+                        ":id",
+                        "capabilities"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": ""
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "step 4 form fields",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"service_pickup_radius_km\": 15,\n    \"provides_pickup_drop\": true,\n    \"repair_capabilities\": [\n        \"550e8400-e29b-41d4-a716-446655440000\"\n    ],\n    \"no_of_service_bays\": 5,\n    \"no_of_technicians\": 8,\n    \"no_of_denting_technicians\": 2,\n    \"no_of_painters\": 2,\n    \"paint_booth_available\": true,\n    \"vehicle_lift_available\": true,\n    \"diagnostic_scanner_available\": true,\n    \"wheel_alignment_machine_available\": false,\n    \"dedicated_accident_repair_area_available\": true\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/partner/onboarding/garage/step-four-fields",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "partner",
+                        "onboarding",
+                        "garage",
+                        "step-four-fields"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "step 5 form fields",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{host}}/partner/onboarding/garage/step-five-fields",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "partner",
+                        "onboarding",
+                        "garage",
+                        "step-five-fields"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "save step 5 details",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"vehicle_types\": [\n    \"bdfe567f-eea9-4cba-8967-3322759455ee\",\n    \"ab286ca7-b893-4819-a6ae-651aa86657e1\"\n  ],\n  \"brands_serviced\": [\n    \"18a1566d-0ed1-43e6-9eef-4dff71be3635\",\n    \"c89b2c98-0e35-432e-94fb-41dc30bb0e33\"\n  ],\n  \"currently_handles_insurance_repairs\": true,\n  \"no_of_insurance_repair_experience\": 5,\n  \"insurance_vehicles_per_month\": 25,\n  \"has_dedicated_insurance_coordinator\": true,\n  \"has_surveyor_inspection_facility\": true,\n  \"has_previous_cashless_repair_experience\": true\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/partner/onboarding/garage/7e88b5b1-a9db-406b-bdc0-536faecde82e/vehicles-and-insurance",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "partner",
+                        "onboarding",
+                        "garage",
+                        "7e88b5b1-a9db-406b-bdc0-536faecde82e",
+                        "vehicles-and-insurance"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "step 6 form fields",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"vehicle_types\": [\n    \"bdfe567f-eea9-4cba-8967-3322759455ee\",\n    \"ab286ca7-b893-4819-a6ae-651aa86657e1\"\n  ],\n  \"brands_serviced\": [\n    \"18a1566d-0ed1-43e6-9eef-4dff71be3635\",\n    \"c89b2c98-0e35-432e-94fb-41dc30bb0e33\"\n  ],\n  \"currently_handles_insurance_repairs\": true,\n  \"no_of_insurance_repair_experience\": 5,\n  \"insurance_vehicles_per_month\": 25,\n  \"has_dedicated_insurance_coordinator\": true,\n  \"has_surveyor_inspection_facility\": true,\n  \"has_previous_cashless_repair_experience\": true\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/partner/onboarding/garage/step-six-fields",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "partner",
+                        "onboarding",
+                        "garage",
+                        "step-six-fields"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "save step 6 data",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n\"insurance_compnies\":[],\n  \"currently_handles_insurance_repairs\": true,\n  \"no_of_insurance_repair_experience\": 5,\n  \"insurance_vehicles_per_month\": 25,\n  \"has_dedicated_insurance_coordinator\": true,\n  \"has_surveyor_inspection_facility\": true,\n  \"has_previous_cashless_repair_experience\": true\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/partner/onboarding/garage/113b281c-eb19-4d54-a4d6-9c6f01384da9/step-six",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "partner",
+                        "onboarding",
+                        "garage",
+                        "113b281c-eb19-4d54-a4d6-9c6f01384da9",
+                        "step-six"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "spare parts",
+              "item": [
+                {
+                  "name": "get spare parts profile form fields",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{host}}/partner/onboarding/spare-parts-profile-form-fields",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "partner",
+                        "onboarding",
+                        "spare-parts-profile-form-fields"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "store spare parts profile",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"partTypes\":[],\n    \"vehicleCategories\":[],\n    \"vehicleBrands\":[],\n    \"partsCategories\":[],\n    \"businessTypes\":[]\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/partner/onboarding/ba35ac10-0151-471c-8eef-1cfa56e28889/spare-parts",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "partner",
+                        "onboarding",
+                        "ba35ac10-0151-471c-8eef-1cfa56e28889",
+                        "spare-parts"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "uploads",
+              "item": [
+                {
+                  "name": "save shop or garrage images",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "[\n    {\n        \"photo_type\" : \"GARAGE_FRONT\",\n        \"object_key\" : \"vendor-applications/7e88b5b1-a9db-406b-bdc0-536faecde82e/location/74495b4c-b8e4-47cd-9ae9-28225fd03d8c.png\", \n        \"sort_order\" : 1\n    },\n      {\n        \"photo_type\" : \"GARAGE_INTERIOR\",\n        \"object_key\" : \"vendor-applications/7e88b5b1-a9db-406b-bdc0-536faecde82e/location/dcb920df-a8de-481d-a4e4-126fd6fa0756.png\", \n        \"sort_order\" : 2\n    }\n]",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/partner/onboarding/:id/images/complete",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "partner",
+                        "onboarding",
+                        ":id",
+                        "images",
+                        "complete"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": ""
+                        }
+                      ]
+                    },
+                    "description": "Request Body: Array of garage/shop images\n\nphoto_type: required  \nAllowed values:  \nGARAGE_FRONT | GARAGE_INTERIOR | SERVICE_BAY | PAINT_BOOTH |  \nVEHICLE_LIFT | DENTING_AREA | ACCIDENT_REPAIR_AREA |  \nEQUIPMENT | OTHER\n\nobject_key: required  \nType: string  \nS3 object key returned after successful upload.\n\nsort_order: optional  \nType: integer  \nMinimum: 0\n\nExample:\n\n\\[  \n{  \n\"photo_type\": \"GARAGE_FRONT\",  \n\"object_key\": \"vendor-applications/KVA-000001/garage-photos/front.webp\",  \n\"sort_order\": 1  \n}  \n\\]"
+                  },
+                  "response": []
+                },
+                {
+                  "name": "save application documents",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "[\n    {\n        \"document_type\" : \"GST_CERTIFICATE\",\n        \"file_type\" : \"PDF\",\n        \"object_key\" : \"vendor-applications/7e88b5b1-a9db-406b-bdc0-536faecde82e/location/74495b4c-b8e4-47cd-9ae9-28225fd03d8c.png\", \n        \"sort_order\" : 1\n    },\n     {\n        \"document_type\" : \"PAN\",\n        \"file_type\" : \"PDF\",\n        \"object_key\" : \"vendor-applications/7e88b5b1-a9db-406b-bdc0-536faecde82e/location/74495b4c-b8e4-47cd-9ae9-28225fd03d8c.png\", \n        \"sort_order\" : 2\n    }\n]",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/partner/onboarding/7e88b5b1-a9db-406b-bdc0-536faecde82e/documents/complete",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "partner",
+                        "onboarding",
+                        "7e88b5b1-a9db-406b-bdc0-536faecde82e",
+                        "documents",
+                        "complete"
+                      ]
+                    },
+                    "description": "Request Body: Array of garage/shop images\n\nphoto_type: required  \nAllowed values:  \nGARAGE_FRONT | GARAGE_INTERIOR | SERVICE_BAY | PAINT_BOOTH |  \nVEHICLE_LIFT | DENTING_AREA | ACCIDENT_REPAIR_AREA |  \nEQUIPMENT | OTHER\n\nobject_key: required  \nType: string  \nS3 object key returned after successful upload.\n\nsort_order: optional  \nType: integer  \nMinimum: 0\n\nExample:\n\n\\[  \n{  \n\"photo_type\": \"GARAGE_FRONT\",  \n\"object_key\": \"vendor-applications/KVA-000001/garage-photos/front.webp\",  \n\"sort_order\": 1  \n}  \n\\]"
+                  },
+                  "response": []
+                },
+                {
+                  "name": "presign location images",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"contentType\": \"image/png\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/partner/onboarding/7e88b5b1-a9db-406b-bdc0-536faecde82e/images/presign",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "partner",
+                        "onboarding",
+                        "7e88b5b1-a9db-406b-bdc0-536faecde82e",
+                        "images",
+                        "presign"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "presign application documents",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"contentType\": \"application/pdf\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/partner/onboarding/7e88b5b1-a9db-406b-bdc0-536faecde82e/documents/presign",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "partner",
+                        "onboarding",
+                        "7e88b5b1-a9db-406b-bdc0-536faecde82e",
+                        "documents",
+                        "presign"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "create onboarding application",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\":\"niraj sanjay patil\",\n    \"phone\":\"8485090521\",\n    \"whatsapp\" : \"8485090521\",\n    \"email\":\"dev.nirajpatil@gmail.com\",\n    \"vendor_type\":\"SERVICE_GARAGE\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/partner/onboarding/create-application",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "partner",
+                    "onboarding",
+                    "create-application"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "save-business-details",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"gstin\":\"{{KOKKI_GSTIN}}\",\n    \"legal_name\":\"KOKKI PRIVATE LIMITED\",\n    \"trade_name\":\"KOKKI PRIVATE LIMITED\",\n    \"business_type\":\"PRIVATE LIMITED\",\n    \"gst_status\":\"ACTIVE\",\n    \"address\":\"flat no 1, sarvasakshi appt, shivsrushti colony, Indira Nagar\",\n    \"state\":\"Maharashtra\",\n    \"city\":\"Nashik\",\n    \"pincode\":\"422009\",\n    \"latitude\":\"19.978421\",\n    \"longitude\":\"73.786733\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/partner/onboarding/8c4601d4-d596-4806-be48-6cf546305aa2/business-details",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "partner",
+                    "onboarding",
+                    "8c4601d4-d596-4806-be48-6cf546305aa2",
+                    "business-details"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "save business hours",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"busiess_days\":\"Monday-Saturday\",\n    \"opening_time\":\"\",\n    \"closing_time\":\"\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/partner/onboarding/8c4601d4-d596-4806-be48-6cf546305aa2/business-hours",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "partner",
+                    "onboarding",
+                    "8c4601d4-d596-4806-be48-6cf546305aa2",
+                    "business-hours"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "submit application",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"busiess_days\":\"Monday-Saturday\",\n    \"opening_time\":\"\",\n    \"closing_time\":\"\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/partner/onboarding/8c4601d4-d596-4806-be48-6cf546305aa2/business-hours",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "partner",
+                    "onboarding",
+                    "8c4601d4-d596-4806-be48-6cf546305aa2",
+                    "business-hours"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "save business location",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"lat\": 19.962362,\n    \"lng\": 73.772122\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/partner/onboarding/ac7053a0-9792-4548-88b6-bb67e4d72a2c/save-location",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "partner",
+                    "onboarding",
+                    "ac7053a0-9792-4548-88b6-bb67e4d72a2c",
+                    "save-location"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "New Request",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "verification",
+      "item": [
+        {
+          "name": "mobile otp",
+          "item": [
+            {
+              "name": "send otp",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{UAT_HOST}}/verification/mobile-otp/8485090521/send",
+                  "host": [
+                    "{{UAT_HOST}}"
+                  ],
+                  "path": [
+                    "verification",
+                    "mobile-otp",
+                    "8485090521",
+                    "send"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "validate-otp",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"number\":\"\",\n    \"otp\":\"\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/verification/mobile-otp/validate",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "verification",
+                    "mobile-otp",
+                    "validate"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Customer",
+      "item": [
+        {
+          "name": "Estimate Requests",
+          "item": [
+            {
+              "name": "create requests",
+              "item": [
+                {
+                  "name": "create estimate request step -1",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "const response = pm.response.json();",
+                          "",
+                          "const accessToken = response.data.accessToken;",
+                          "const requestId = response.data.request.id;",
+                          "",
+                          "// Store at collection level",
+                          "pm.collectionVariables.set(\"accessToken\", accessToken);",
+                          "pm.collectionVariables.set(\"request_id\", requestId);",
+                          "",
+                          "console.log(\"Access Token:\", accessToken);",
+                          "console.log(\"Request ID:\", requestId);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {},
+                        "requests": {}
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"registrationNo\": \"MH15CD7044\",\n    \"phoneNo\": \"8856852029\",\n    \"servicePin\": 422009,\n    \"isVehicleDrivable\": \"YES\",\n    \"email\":\"neeraj.patil@kokki.in\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/estimate-requests/create-request/step-1",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "estimate-requests",
+                        "create-request",
+                        "step-1"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "get signed url to upload images",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"contentType\": \"image/heic\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/estimate-requests/8fb200a7-1314-4c70-a779-2adac285afe0/images/presign",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "estimate-requests",
+                        "8fb200a7-1314-4c70-a779-2adac285afe0",
+                        "images",
+                        "presign"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "complete upload",
+                  "request": {
+                    "method": "GET",
+                    "header": []
+                  },
+                  "response": []
+                },
+                {
+                  "name": "get documents presign",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"contentType\" :\"image/png\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/estimate-requests/:id/documents/presign",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "estimate-requests",
+                        ":id",
+                        "documents",
+                        "presign"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": ""
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "submit documents",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "[\n    {\n        \"document_type\": \"\",\n        \"order\": \"\",\n        \"object_key\": \"\"\n    },\n    {\n        \"document_type\": \"\",\n        \"order\": \"\",\n        \"object_key\": \"\"\n    }\n]",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/estimate-requests/:id/documents/complete",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "estimate-requests",
+                        ":id",
+                        "documents",
+                        "complete"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": ""
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "complete request",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"rcBook\": {\n    \"key\": \"uploads/documents/2026/08/77777777-7777-4777-8777-777777777777.pdf\",\n    \"url\": \"https://cdn.kokki.in/uploads/documents/2026/08/77777777-7777-4777-8777-777777777777.pdf\"\n  },\n  \"insurancePolicy\": {\n    \"key\": \"uploads/images/2026/08/88888888-8888-4888-8888-888888888888.webp\",\n    \"url\": \"https://cdn.kokki.in/uploads/images/2026/08/88888888-8888-4888-8888-888888888888.webp\"\n  }\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{host}}/estimate-requests/:id/complete",
+                      "host": [
+                        "{{host}}"
+                      ],
+                      "path": [
+                        "estimate-requests",
+                        ":id",
+                        "complete"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": ""
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "New Request",
+                  "request": {
+                    "method": "GET",
+                    "header": []
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "New Folder",
+      "item": [
+        {
+          "name": "New Request",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "New Folder",
+      "item": []
+    },
+    {
+      "name": "Master Data",
+      "item": [
+        {
+          "name": "vehicles",
+          "item": [
+            {
+              "name": "vehicle makes",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{host}}/master/vehicles/makes",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "master",
+                    "vehicles",
+                    "makes"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "vehicle categories",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{host}}/master/vehicles/categories",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "master",
+                    "vehicles",
+                    "categories"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "add vehicle make",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\":\"Ap\",\n    \"slug\":\"tata motors\",\n    \"country\":\"india\",\n    \"logo_url\":\"\",\n    \"is_active\":false,\n    \"categories\":[\"ab286ca7-b893-4819-a6ae-651aa86657e1\",\"bdfe567f-eea9-4cba-8967-3322759455ee\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{host}}/master/vehicles/makes",
+                  "host": [
+                    "{{host}}"
+                  ],
+                  "path": [
+                    "master",
+                    "vehicles",
+                    "makes"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "host",
+      "value": ""
+    },
+    {
+      "key": "GST_VERIFICATION_API_KEY",
+      "secret": true
+    },
+    {
+      "key": "API_SETU_CLIENT_ID",
+      "secret": true
+    },
+    {
+      "key": "KOKKI_GSTIN",
+      "secret": true
+    },
+    {
+      "key": "SHREENISHA_GSTIN",
+      "secret": true
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "request_id",
+      "value": ""
+    },
+    {
+      "key": "UAT_HOST",
+      "value": ""
+    },
+    {
+      "key": "roleId",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": ""
+    },
+    {
+      "key": "testRoleCode",
+      "value": "POSTMAN_ROLE"
+    },
+    {
+      "key": "testRolePrefix",
+      "value": "PTST"
+    },
+    {
+      "key": "originalRoleIds",
+      "value": "[]"
+    },
+    {
+      "key": "estimateRequestId",
+      "value": ""
+    }
+  ]
+}

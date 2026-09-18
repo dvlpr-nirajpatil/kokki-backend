@@ -5,6 +5,7 @@ const { response, logger } = require("./core");
 const helmet = require("helmet");
 const compression = require("compression");
 const corsOptions = require("./config/cors");
+const missingBody = require("./middlewares/missing_body.middleware");
 
 
 const app = express();
@@ -22,6 +23,8 @@ app.use(
 app.use(cors(corsOptions));
 
 app.use(express.json({ limit: "10mb" }));
+app.use(missingBody);
+
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 app.use(requestLogger);

@@ -44,7 +44,7 @@ const envSchema = z
     SEND_OTP_TEMPLATE: z.string().min(1, "SEND_OTP_TEMPLATE is required"),
     TEST_CREDENTIALS: z.string().min(1, "SEND_OTP_TEMPLATE is required"),
     STATIC_OTP: z.string().min(4, "STATIC_OTP is required"),
-    EMAIL_FROM: z.email("EMAIL FROM REQUIRED"),
+    EMAIL_FROM: z.string().min(4, "EMAIL FROM REQUIRED"),
     LOGO_URL: z.string().min(10, "LOGO_URL is required"),
   })
   .superRefine((values, context) => {
