@@ -1,49 +1,55 @@
 const { query } = require("../../../config/db");
 
 async function getEstimateRequests() {
-    const SQL = `
-        SELECT
-            er.*,
-            COALESCE(
-                json_agg(
-                    json_build_object(
-                        'id', er_images.id,
-                        'object_key', er_images.object_key
-                    )
-                ) FILTER (WHERE er_images.id IS NOT NULL),
-                '[]'
-            ) AS images,
-              COALESCE(
-                json_agg(
-                    json_build_object(
-                        'id' , er_documents.id,
-                        'document_type', er_documents.document_type,
-                        'object_key', er_documents.object_key
-                    )
-                ) FILTER (WHERE er_images.id IS NOT NULL),
-                '[]'
-            ) AS documents
-       
-
-        FROM estimate_requests er
-
-        LEFT JOIN estimate_request_images er_images
-            ON er.id = er_images.estimate_request_id
-
-        LEFT JOIN estimate_request_documents er_documents on er.id = er_documents.estimate_request_id    
-
-        WHERE er.status = $1
-
-        GROUP BY er.id
-
-        ORDER BY er.created_at DESC
+  const SQL = `
+        SELECT *
+        FROM estimate_requests
+        WHERE status = $1
+        ORDER BY created_at DESC
     `;
 
-    const result = await query(SQL, ["SUBMITTED"]);
+  const result = await query(SQL, ["SUBMITTED"]);
+  return result.rows;
+}
 
-    return result.rows;
+async function getEstimateRequestById(estimateRequestId) {
+  const SQL = `
+        SELECT *
+        FROM estimate_requests
+        WHERE id = $1
+    `;
+
+  const result = await query(SQL, [estimateRequestId]);
+  return result.rows[0];
+}
+
+async function getEstimateRequestImages(estimateRequestId) {
+  const SQL = `
+        SELECT id, object_key
+        FROM estimate_request_images
+        WHERE estimate_request_id = $1
+        ORDER BY sort_order, id
+    `;
+
+  const result = await query(SQL, [estimateRequestId]);
+  return result.rows;
+}
+
+async function getEstimateRequestDocuments(estimateRequestId) {
+  const SQL = `
+        SELECT id, document_type, object_key
+        FROM estimate_request_documents
+        WHERE estimate_request_id = $1
+        ORDER BY sort_order, id
+    `;
+
+  const result = await query(SQL, [estimateRequestId]);
+  return result.rows;
 }
 
 module.exports = {
-    getEstimateRequests
-}
+  getEstimateRequests,
+  getEstimateRequestById,
+  getEstimateRequestImages,
+  getEstimateRequestDocuments,
+};
